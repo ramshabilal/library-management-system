@@ -19,11 +19,11 @@ public class Book {
     }
 
     public String getTitle() {
-        return "";
+        return title;
     }
 
     public String getAuthor() {
-        return "";
+        return author;
     }
 
 }

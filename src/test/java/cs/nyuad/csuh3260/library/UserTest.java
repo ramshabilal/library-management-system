@@ -39,4 +39,12 @@ public class UserTest {
         assertNotEquals(user2.getId(), user3.getId());        
     }
 
+    @Test
+    public void testGetters() {
+        assertEquals("John Doe", user.getName());
+        assertEquals("johndoe", user.getUsername());
+        assertEquals("john123", user.getPassword());
+    }
+
+
 }

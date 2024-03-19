@@ -17,15 +17,15 @@ public class User {
     }
 
     public String getName() {
-        return "";
+        return name;
     }
 
     public String getUsername() {
-        return "";
+        return username;
     }
 
     public String getPassword() {
-       return "";
+       return password;
     }
 
     public String getId() {

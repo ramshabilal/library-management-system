@@ -1,10 +1,19 @@
 package cs.nyuad.csuh3260.library;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BookTest {
+
+    private Book book;
+
+    @BeforeEach
+    public void setUp() {
+        // Create a book
+        book = new Book("The Great Gatsby", "F. Scott Fitzgerald");
+    }
 
     @Test
     public void testBookCreation() {
@@ -24,19 +33,13 @@ public class BookTest {
 
     @Test
     public void testGetters() {
-        // Create a book
-        Book book = new Book("The Catcher in the Rye", "J.D. Salinger");
-
         // Test getters
-        assertEquals("The Catcher in the Rye", book.getTitle());
-        assertEquals("J.D. Salinger", book.getAuthor());
+        assertEquals("The Great Gatsby", book.getTitle());
+        assertEquals("F. Scott Fitzgerald", book.getAuthor());
     }
 
     @Test
     public void testSetTitle() {
-        // Create a book
-        Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald");
-
         // Set a new title
         book.setTitle("To Kill a Mockingbird");
 
@@ -46,9 +49,6 @@ public class BookTest {
 
     @Test
     public void testSetAuthor() {
-        // Create a book
-        Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald");
-
         // Set a new author
         book.setAuthor("Harper Lee");
 

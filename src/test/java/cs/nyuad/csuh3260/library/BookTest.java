@@ -22,4 +22,14 @@ public class BookTest {
         assertNotEquals(book2.getID(), book3.getID());
     }
 
+    @Test
+    public void testGetters() {
+        // Create a book
+        Book book = new Book("The Catcher in the Rye", "J.D. Salinger");
+
+        // Test getters
+        assertEquals("The Catcher in the Rye", book.getTitle());
+        assertEquals("J.D. Salinger", book.getAuthor());
+    }
+
 }

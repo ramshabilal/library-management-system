@@ -18,4 +18,12 @@ public class Book {
         return id;
     }
 
+    public String getTitle() {
+        return "";
+    }
+
+    public String getAuthor() {
+        return "";
+    }
+
 }

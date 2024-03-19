@@ -29,9 +29,11 @@ public class Book {
 
     // Setters
     public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setAuthor(String author) {
+        this.author = author;
     }
 
 }

@@ -55,7 +55,7 @@ public class UserTest {
     @Test
     public void testSetPassword() {
         user.setPassword("jane123");
-        assertEquals("jane123", user.getUsername());
+        assertEquals("jane123", user.getPassword());
     }
 
 

@@ -15,8 +15,8 @@ public class UserTest {
     @Test
     public void testUserCreation() {
         // user 1 is user created in setUp()
-        user2 = new User("Tom Smith", "tomsmith", "tom123");
-        user3 - new User("Sara Johnson", "sarajohnson", "sara123");
+       User user2 = new User("Tom Smith", "tomsmith", "tom123");
+       User user3 = new User("Sara Johnson", "sarajohnson", "sara123");
 
         // Check that created users are not null
         assertNotNull(user);

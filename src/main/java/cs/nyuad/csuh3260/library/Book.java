@@ -14,6 +14,7 @@ public class Book {
         this.author = author;
     }
 
+    // Getters
     public String getID() {
         return id;
     }
@@ -24,6 +25,13 @@ public class Book {
 
     public String getAuthor() {
         return author;
+    }
+
+    // Setters
+    public void setTitle(String title) {
+    }
+
+    public void setAuthor(String author) {
     }
 
 }

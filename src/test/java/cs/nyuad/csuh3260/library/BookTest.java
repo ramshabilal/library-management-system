@@ -32,4 +32,28 @@ public class BookTest {
         assertEquals("J.D. Salinger", book.getAuthor());
     }
 
+    @Test
+    public void testSetTitle() {
+        // Create a book
+        Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald");
+
+        // Set a new title
+        book.setTitle("To Kill a Mockingbird");
+
+        // Check if the title has been updated
+        assertEquals("To Kill a Mockingbird", book.getTitle());
+    }
+
+    @Test
+    public void testSetAuthor() {
+        // Create a book
+        Book book = new Book("The Great Gatsby", "F. Scott Fitzgerald");
+
+        // Set a new author
+        book.setAuthor("Harper Lee");
+
+        // Check if the author has been updated
+        assertEquals("Harper Lee", book.getAuthor());
+    }
+
 }

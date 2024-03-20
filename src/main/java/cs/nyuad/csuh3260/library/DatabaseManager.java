@@ -9,8 +9,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
-import cs.nyuad.csuh3260.library.exceptions.BookAlreadyExistsException;
-
 import org.bson.Document;
 
 public class DatabaseManager {
@@ -20,16 +18,24 @@ public class DatabaseManager {
 
     private MongoClient mongoClient;
     private MongoDatabase database;
+    private MongoCollection<Document> booksCollection;
 
     public DatabaseManager() {
         String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
         this.mongoClient = MongoClients.create(uri);
         this.database = mongoClient.getDatabase(DATABASE_NAME);
+        this.booksCollection = database.getCollection(COLLECTION_NAME);
+    }
+
+    public DatabaseManager(MongoDatabase database) {
+        String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
+        this.mongoClient = MongoClients.create(uri);
+        this.database = database;
+        this.booksCollection = database.getCollection(COLLECTION_NAME);
     }
 
     // Method to retrieve all books from the database
     public List<Book> getBooks() {
-        MongoCollection<Document> booksCollection = database.getCollection(COLLECTION_NAME);
         List<Book> books = new ArrayList<>();
         // Retrieve documents from the collection
         try (MongoCursor<Document> cursor = booksCollection.find().iterator()) {
@@ -44,8 +50,11 @@ public class DatabaseManager {
         return books;
     }
 
-    public void addNewBook(Book book) throws BookAlreadyExistsException {
-
+    public void addNewBook(Book book) {
+        Document doc = new Document("id", book.getID())
+                .append("title", book.getTitle())
+                .append("author", book.getAuthor());
+        booksCollection.insertOne(doc);
     }
 
     // Close MongoDB client

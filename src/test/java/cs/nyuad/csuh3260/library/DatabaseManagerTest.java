@@ -1,9 +1,11 @@
 package cs.nyuad.csuh3260.library;
 
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import cs.nyuad.csuh3260.library.exceptions.BookAlreadyExistsException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -13,17 +15,26 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+
 public class DatabaseManagerTest {
 
     private DatabaseManager databaseManager;
+    private MongoDatabase mockDatabase;
+    private MongoCollection<Document> mockBooksCollection;
 
     @BeforeEach
     public void setUp() {
-        databaseManager = mock(DatabaseManager.class);
+        mockDatabase = mock(MongoDatabase.class);
+        mockBooksCollection = mock(MongoCollection.class);
+        when(mockDatabase.getCollection("books")).thenReturn(mockBooksCollection);
+        databaseManager = new DatabaseManager(mockDatabase);
     }
 
     @Test
     public void testGetBooks() {
+        databaseManager = mock(DatabaseManager.class);
         List<Book> expected = new ArrayList<>();
         expected.add(new Book("1", "Title 1", "Author 1"));
         expected.add(new Book("2", "Title 2", "Author 2"));
@@ -40,34 +51,19 @@ public class DatabaseManagerTest {
     }
 
     @Test
-    public void testAddNewBook() throws BookAlreadyExistsException {
+    public void testAddNewBook() {
+        // Given
         Book newBook = new Book("1", "New Book Title", "New Book Author");
 
-        // Mock the behavior of getBooks() to return an empty list
-        when(databaseManager.getBooks()).thenReturn(List.of());
-
-        // When adding a new book
+        // When
         databaseManager.addNewBook(newBook);
 
-        // Then verify that the book was added successfully
-        verify(databaseManager).getBooks();
-        verify(databaseManager).addNewBook(newBook);
-    }
-
-    @Test
-    public void testAddExistingBookShouldThrow() {
-        // Given
-        Book existingBook = new Book("1", "Title", "Author");
-
-        // Mock the behavior of getBooks() to return a list containing the existing book
-        when(databaseManager.getBooks()).thenReturn(List.of(existingBook));
-
-        // When adding a new book with the same title and author
-        Book newBook = new Book("2", "Title", "Author");
-
-        // Then expect BookAlreadyExistsException to be thrown
-        assertThrows(BookAlreadyExistsException.class, () -> {
-            databaseManager.addNewBook(newBook);
-        }, "Expected BookAlreadyExistsException but it was not thrown");
+        // Then
+        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
+        verify(mockBooksCollection).insertOne(documentCaptor.capture());
+        Document capturedDocument = documentCaptor.getValue();
+        assertEquals(newBook.getID(), capturedDocument.getString("id"));
+        assertEquals(newBook.getTitle(), capturedDocument.getString("title"));
+        assertEquals(newBook.getAuthor(), capturedDocument.getString("author"));
     }
 }

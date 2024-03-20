@@ -9,6 +9,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
+import cs.nyuad.csuh3260.library.exceptions.BookAlreadyExistsException;
+
 import org.bson.Document;
 
 public class DatabaseManager {
@@ -40,6 +42,10 @@ public class DatabaseManager {
             }
         }
         return books;
+    }
+
+    public void addNewBook(Book book) throws BookAlreadyExistsException {
+
     }
 
     // Close MongoDB client

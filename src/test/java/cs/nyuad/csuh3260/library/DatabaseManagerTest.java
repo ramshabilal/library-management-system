@@ -1,13 +1,15 @@
 package cs.nyuad.csuh3260.library;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,8 +17,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.Doc;
+
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.UpdateResult;
 
 public class DatabaseManagerTest {
 
@@ -65,5 +71,29 @@ public class DatabaseManagerTest {
         assertEquals(newBook.getID(), capturedDocument.getString("id"));
         assertEquals(newBook.getTitle(), capturedDocument.getString("title"));
         assertEquals(newBook.getAuthor(), capturedDocument.getString("author"));
+    }
+
+    @Test
+    public void testAddMoreBooks() throws Exception {
+        Document book = new Document("id", "1").append("title", "t").append("author", "a").append("count", 5);
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        when(findIterable.first()).thenReturn(book);
+        when(mockBooksCollection.find(any(Bson.class))).thenReturn(findIterable);
+
+        // Mock the updateOne() method
+        UpdateResult updateResult = mock(UpdateResult.class);
+        when(mockBooksCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(updateResult);
+
+        // Call the method under test
+        databaseManager.addMoreBooks("1", 1);
+
+        // Verify that find() was called with the correct filter
+        verify(mockBooksCollection).find(eq(new Document("id", "1")));
+
+        // Verify that updateOne() was called with the correct filter and update
+        // parameters
+        verify(mockBooksCollection).updateOne(
+                eq(new Document("id", "1")),
+                eq(new Document("$set", new Document("count", 6))));
     }
 }

@@ -57,6 +57,10 @@ public class DatabaseManager {
         booksCollection.insertOne(doc);
     }
 
+    public void addMoreBooks(String bookID, Integer count) {
+
+    }
+
     // Close MongoDB client
     public void close() {
         mongoClient.close();

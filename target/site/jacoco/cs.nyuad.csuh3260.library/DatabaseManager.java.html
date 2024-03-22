@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DatabaseManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Library</a> &gt; <a href="index.source.html" class="el_package">cs.nyuad.csuh3260.library</a> &gt; <span class="el_source">DatabaseManager.java</span></div><h1>DatabaseManager.java</h1><pre class="source lang-java linenums">package cs.nyuad.csuh3260.library;
 
-<span class="nc" id="L3">public class DatabaseManager {</span>
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+// import com.mongodb.client.result.DeleteResult;
+// import com.mongodb.internal.bulk.DeleteRequest;
+
+import org.bson.Document;
+
+public class DatabaseManager {
+
+    private static final String DATABASE_NAME = &quot;library_g3&quot;;
+    private static final String COLLECTION_NAME = &quot;users&quot;;
+
+    private MongoClient mongoClient;
+    private MongoDatabase database;
+    private MongoCollection&lt;Document&gt; usersCollection;
+
+<span class="nc" id="L25">    public DatabaseManager() {</span>
+<span class="nc" id="L26">        String uri = &quot;mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&amp;w=majority&amp;appName=Cluster0&quot;;</span>
+<span class="nc" id="L27">        this.mongoClient = MongoClients.create(uri);</span>
+<span class="nc" id="L28">        this.database = mongoClient.getDatabase(DATABASE_NAME);</span>
+<span class="nc" id="L29">        this.usersCollection = database.getCollection(COLLECTION_NAME);</span>
+<span class="nc" id="L30">    }</span>
+
+<span class="fc" id="L32">    public DatabaseManager(MongoDatabase database) {</span>
+<span class="fc" id="L33">        String uri = &quot;mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&amp;w=majority&amp;appName=Cluster0&quot;;</span>
+<span class="fc" id="L34">        this.mongoClient = MongoClients.create(uri);</span>
+<span class="fc" id="L35">        this.database = database;</span>
+<span class="fc" id="L36">        this.usersCollection = database.getCollection(COLLECTION_NAME);</span>
+<span class="fc" id="L37">    }</span>
+
+
+    public void addUser(User user) {
+        
+<span class="nc" id="L42">    }</span>
+
+    public List&lt;User&gt; getUsers() {
+<span class="nc" id="L45">        return null;</span>
+    }
+
+    // Close MongoDB client
+    public void close() {
+<span class="nc" id="L50">        mongoClient.close();</span>
+<span class="nc" id="L51">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

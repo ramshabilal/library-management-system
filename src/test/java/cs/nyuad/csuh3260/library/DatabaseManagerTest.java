@@ -45,8 +45,8 @@ public class DatabaseManagerTest {
     public void testGetBooks() {
         databaseManager = mock(DatabaseManager.class);
         List<Book> expected = new ArrayList<>();
-        expected.add(new Book("1", "Title 1", "Author 1"));
-        expected.add(new Book("2", "Title 2", "Author 2"));
+        expected.add(new Book("1", "Title 1", "Author 1", 1));
+        expected.add(new Book("2", "Title 2", "Author 2", 1));
 
         when(databaseManager.getBooks()).thenReturn(expected);
 
@@ -62,9 +62,11 @@ public class DatabaseManagerTest {
     @Test
     public void testAddNewBook() {
         // Given
-        Book newBook = new Book("1", "New Book Title", "New Book Author");
-        Document expected = new Document("id", newBook.getID()).append("title", newBook.getTitle()).append("author",
-                newBook.getAuthor());
+        Book newBook = new Book("1", "New Book Title", "New Book Author", 1);
+        Document expected = new Document("id", newBook.getID())
+                .append("title", newBook.getTitle())
+                .append("author", newBook.getAuthor())
+                .append("count", newBook.getCount());
 
         InsertOneResult i = mock(InsertOneResult.class);
         when(mockBooksCollection.insertOne(any(Document.class))).thenReturn(i);

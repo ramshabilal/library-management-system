@@ -7,11 +7,11 @@ public class Book {
     private String author;
     private Integer count;
 
-    public Book(String id, String title, String author) {
+    public Book(String id, String title, String author, Integer count) {
         this.id = id;
         this.title = title;
         this.author = author;
-        this.count = 0;
+        this.count = count;
     }
 
     // Getters

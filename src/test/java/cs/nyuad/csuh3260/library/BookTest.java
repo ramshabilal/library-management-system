@@ -13,15 +13,15 @@ public class BookTest {
     @BeforeEach
     public void setUp() {
         // Create a book
-        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald");
+        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
     }
 
     @Test
     public void testBookCreation() {
         // Create some books
-        Book book1 = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald");
-        Book book2 = new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee");
-        Book book3 = new Book(UUID.randomUUID().toString(), "1984", "George Orwell");
+        Book book1 = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
+        Book book2 = new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee", 1);
+        Book book3 = new Book(UUID.randomUUID().toString(), "1984", "George Orwell", 1);
 
         // Test that IDs are not null and unique
         assertNotNull(book1.getID());

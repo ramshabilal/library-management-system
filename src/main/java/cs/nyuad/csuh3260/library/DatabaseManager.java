@@ -46,7 +46,8 @@ public class DatabaseManager {
                 String id = doc.getString("id");
                 String title = doc.getString("title");
                 String author = doc.getString("author");
-                books.add(new Book(id, title, author));
+                Integer count = doc.getInteger("count");
+                books.add(new Book(id, title, author, count));
             }
         }
         return books;
@@ -55,7 +56,8 @@ public class DatabaseManager {
     public void addNewBook(Book book) {
         Document doc = new Document("id", book.getID())
                 .append("title", book.getTitle())
-                .append("author", book.getAuthor());
+                .append("author", book.getAuthor())
+                .append("count", book.getCount());
         booksCollection.insertOne(doc);
     }
 

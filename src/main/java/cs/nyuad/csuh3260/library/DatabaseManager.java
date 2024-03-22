@@ -42,7 +42,17 @@ public class DatabaseManager {
     }
 
     public List<User> getUsers() {
-        return null;
+        List<User> users = new ArrayList<>();
+        MongoCursor<Document> cursor = usersCollection.find().iterator();
+        try {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                users.add(new User(doc.getString("name"), doc.getString("username"), doc.getString("password")));
+            }
+        } finally {
+            cursor.close();
+        }
+        return users;
     }
 
     // Close MongoDB client

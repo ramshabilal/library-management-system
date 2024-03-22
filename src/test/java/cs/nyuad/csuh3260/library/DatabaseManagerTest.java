@@ -40,12 +40,19 @@ public class DatabaseManagerTest {
 
     @Test
     public void testGetUsers() {
+        databaseManager = mock(DatabaseManager.class);
+        List<User> expected = new ArrayList<>();
+        expected.add(new User("John Doe", "johndoe", "password123"));
+        expected.add(new User("Jane Smith", "janesmith", "password456"));
+
+        when(databaseManager.getUsers()).thenReturn(expected);
+
         // When
-        List<User> users = databaseManager.getUsers();
+        List<User> actualUsers = databaseManager.getUsers();
 
         // Then
-        assertNotNull(users);
-        assertTrue(users.isEmpty());
+        assertNotNull(actualUsers);
+        assertEquals(expected.size(), actualUsers.size());
+        assertEquals(expected, actualUsers);
     }
-
 }

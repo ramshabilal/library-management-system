@@ -74,18 +74,30 @@ public class SystemManagerTest {
 
     @Test
     void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
-        // Arrange
         Book book = new Book("Book 1", "Author 1");
         when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
 
-        // Act
         system.addMoreBooks(book.getID(), 5);
 
-        // Assert
         Map<String, Integer> availabilityList = system.getAvailabilityList();
         assertNotNull(availabilityList);
         assertEquals(5, availabilityList.getOrDefault("1", 0));
         // verify(databaseManager, times(1)).addMoreBooks(book, 5);
         // verify(databaseManager, times(1)).getBooks();
     }
+
+    @Test
+    void testRemoveAllBook_ValidBook_RemovesBookFromDatabase() {
+        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(new Book("Book 1", "Author 1")));
+
+        system.removeAllBook("1");
+
+        Map<String, Integer> availabilityList = system.getAvailabilityList();
+        assertNotNull(availabilityList);
+        assertFalse(system.getAvailabilityList().containsKey("1"));
+        // verify(databaseManager, times(1)).removeAllBook("1");
+        // verify(databaseManager, times(1)).getBooks();
+    }
+
+
 }

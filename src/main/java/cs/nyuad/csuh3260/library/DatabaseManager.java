@@ -74,7 +74,7 @@ public class DatabaseManager {
     }
 
     public void removeAllBook(String bookID) {
-
+        booksCollection.deleteOne(new Document("id", bookID));
     }
 
     // Close MongoDB client

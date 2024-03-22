@@ -78,7 +78,20 @@ public class DatabaseManager {
     }
 
     public void removeKBooks(String bookID, Integer count) throws Exception {
+        Document book = booksCollection.find(new Document("id", bookID)).first();
+        if (book != null) {
+            int currentCount = book.getInteger("count");
+            if (currentCount < count) {
+                throw new Exception("There are less books to remove!");
+            }
+            int newCount = currentCount - count;
 
+            booksCollection.updateOne(
+                    new Document("id", bookID),
+                    new Document("$set", new Document("count", newCount)));
+        } else {
+            throw new Exception("No such book.");
+        }
     }
 
     // Close MongoDB client

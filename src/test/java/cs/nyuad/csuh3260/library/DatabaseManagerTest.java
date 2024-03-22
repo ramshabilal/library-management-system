@@ -23,6 +23,7 @@ import javax.print.Doc;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
@@ -97,5 +98,15 @@ public class DatabaseManagerTest {
         verify(mockBooksCollection).updateOne(
                 eq(new Document("id", "1")),
                 eq(new Document("$set", new Document("count", 6))));
+    }
+
+    @Test
+    public void testRemoveAllBook() {
+        DeleteResult mockRes = mock(DeleteResult.class);
+        when(mockBooksCollection.deleteOne(any(Document.class))).thenReturn(mockRes);
+
+        databaseManager.removeAllBook("1");
+
+        verify(mockBooksCollection).deleteOne(eq(new Document("id", "1")));
     }
 }

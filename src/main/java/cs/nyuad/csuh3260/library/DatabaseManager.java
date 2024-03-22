@@ -8,6 +8,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.internal.bulk.DeleteRequest;
 
 import org.bson.Document;
 
@@ -69,6 +71,10 @@ public class DatabaseManager {
         } else {
             throw new Exception("No such book.");
         }
+    }
+
+    public void removeAllBook(String bookID) {
+
     }
 
     // Close MongoDB client

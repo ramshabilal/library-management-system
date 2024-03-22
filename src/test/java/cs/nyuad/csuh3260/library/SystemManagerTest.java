@@ -99,5 +99,18 @@ public class SystemManagerTest {
         // verify(databaseManager, times(1)).getBooks();
     }
 
+    @Test
+    void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
+        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(new Book("Book 1", "Author 1")));
+        system.addMoreBooks("1", 5);
+
+        system.removeKBooks("1", 3);
+
+        Map<String, Integer> availabilityList = system.getAvailabilityList();
+        assertNotNull(availabilityList);
+        assertEquals(2, availabilityList.getOrDefault("1", 0));
+        // verify(databaseManager, times(1)).removeKBooks("1", 3);
+        // verify(databaseManager, times(2)).getBooks();
+    }
 
 }

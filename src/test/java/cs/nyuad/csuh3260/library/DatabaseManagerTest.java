@@ -35,7 +35,10 @@ public class DatabaseManagerTest {
 
     @BeforeEach
     public void setUp() {
-        databaseManager = new DatabaseManager();
+        mockDatabase = mock(MongoDatabase.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        when(mockDatabase.getCollection("users")).thenReturn(mockUsersCollection);
+        databaseManager = new DatabaseManager(mockDatabase);
     }
 
     @Test
@@ -52,7 +55,23 @@ public class DatabaseManagerTest {
 
         // Then
         assertNotNull(actualUsers);
-        assertEquals(expected.size(), actualUsers.size());
         assertEquals(expected, actualUsers);
+        assertEquals(expected.size(), actualUsers.size());
+    }
+
+    @Test
+    public void testAddUser() {
+        // Given
+        User user = new User("John Doe", "johndoe", "password123");
+        Document expected = new Document("name", "John Doe").append("username", "johndoe").append("password", "password123");
+
+        InsertOneResult a = mock(InsertOneResult.class);
+        when(mockUsersCollection.insertOne(any(Document.class))).thenReturn(a);
+
+        // When
+        databaseManager.addUser(user);
+
+        // Then
+        verify(mockUsersCollection).insertOne(eq(expected));
     }
 }

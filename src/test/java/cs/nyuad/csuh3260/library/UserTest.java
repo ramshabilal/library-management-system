@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 public class UserTest {
     private User user;
 
@@ -15,7 +17,8 @@ public class UserTest {
     @Test
     public void testUserCreation() {
         // user 1 is user created in setUp()
-       User user2 = new User("Tom Smith", "tomsmith", "tom123");
+        String id = UUID.randomUUID().toString();
+       User user2 = new User(id, "Tom Smith", "tomsmith", "tom123");
        User user3 = new User("Sara Johnson", "sarajohnson", "sara123");
 
         // Check that created users are not null

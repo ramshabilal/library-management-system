@@ -16,6 +16,13 @@ public class User {
         this.id = UUID.randomUUID().toString();
     }
 
+    public User(String id, String name, String username, String password) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }

@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.print.Doc;
 
@@ -62,8 +63,9 @@ public class DatabaseManagerTest {
     @Test
     public void testAddUser() {
         // Given
-        User user = new User("John Doe", "johndoe", "password123");
-        Document expected = new Document("name", "John Doe").append("username", "johndoe").append("password", "password123");
+        String id = UUID.randomUUID().toString();
+        User user = new User(id, "John Doe", "johndoe", "password123");
+        Document expected = new Document("id", id).append("name", "John Doe").append("username", "johndoe").append("password", "password123");
 
         InsertOneResult a = mock(InsertOneResult.class);
         when(mockUsersCollection.insertOne(any(Document.class))).thenReturn(a);

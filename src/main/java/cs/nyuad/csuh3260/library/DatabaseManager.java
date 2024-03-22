@@ -36,9 +36,10 @@ public class DatabaseManager {
         this.usersCollection = database.getCollection(COLLECTION_NAME);
     }
 
-
     public void addUser(User user) {
-        
+        Document doc = new Document("id", user.getId()).append("name", user.getName()).append("username", user.getUsername())
+                .append("password", user.getPassword());
+        usersCollection.insertOne(doc);
     }
 
     public List<User> getUsers() {

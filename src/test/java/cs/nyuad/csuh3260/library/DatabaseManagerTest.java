@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import javax.print.Doc;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
 
 public class DatabaseManagerTest {
@@ -60,17 +62,17 @@ public class DatabaseManagerTest {
     public void testAddNewBook() {
         // Given
         Book newBook = new Book("1", "New Book Title", "New Book Author");
+        Document expected = new Document("id", newBook.getID()).append("title", newBook.getTitle()).append("author",
+                newBook.getAuthor());
+
+        InsertOneResult i = mock(InsertOneResult.class);
+        when(mockBooksCollection.insertOne(any(Document.class))).thenReturn(i);
 
         // When
         databaseManager.addNewBook(newBook);
 
         // Then
-        ArgumentCaptor<Document> documentCaptor = ArgumentCaptor.forClass(Document.class);
-        verify(mockBooksCollection).insertOne(documentCaptor.capture());
-        Document capturedDocument = documentCaptor.getValue();
-        assertEquals(newBook.getID(), capturedDocument.getString("id"));
-        assertEquals(newBook.getTitle(), capturedDocument.getString("title"));
-        assertEquals(newBook.getAuthor(), capturedDocument.getString("author"));
+        verify(mockBooksCollection).insertOne(eq(expected));
     }
 
     @Test

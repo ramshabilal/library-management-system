@@ -57,8 +57,18 @@ public class DatabaseManager {
         booksCollection.insertOne(doc);
     }
 
-    public void addMoreBooks(String bookID, Integer count) {
+    public void addMoreBooks(String bookID, Integer count) throws Exception {
+        Document book = booksCollection.find(new Document("id", bookID)).first();
+        if (book != null) {
+            int currentCount = book.getInteger("count");
+            int newCount = currentCount + count;
 
+            booksCollection.updateOne(
+                    new Document("id", bookID),
+                    new Document("$set", new Document("count", newCount)));
+        } else {
+            throw new Exception("No such book.");
+        }
     }
 
     // Close MongoDB client

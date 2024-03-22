@@ -51,19 +51,23 @@ public class SystemManagerTest {
 
     @Test
     void testReturnBook_ValidUserAndBook_ReturnsBook() {
-        // Arrange
         when(databaseManager.getBooks()).thenReturn(Collections.singletonList(new Book("Book 1", "Author 1")));
         when(databaseManager.getUsers(anyList())).thenReturn(Collections.singletonList("1"));
         system.reserve("1", "1");
 
-        // Act
         boolean result = system.returnBook("1", "1");
 
-        // Assert
         assertTrue(result);
         assertFalse(system.getBookings().containsKey("1"));
         verify(databaseManager, times(2)).getBooks();
         verify(databaseManager, times(2)).getUsers(anyList());
     }
     
+    @Test
+    void testAddNewBook_ValidBook_AddsBookToDatabase() {
+        system.addNewBook("Book 1", "Author 1");
+
+        verify(databaseManager, times(1)).addNewBook(any(Book.class));
+    }
+
 }

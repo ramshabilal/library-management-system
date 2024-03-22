@@ -109,4 +109,28 @@ public class DatabaseManagerTest {
 
         verify(mockBooksCollection).deleteOne(eq(new Document("id", "1")));
     }
+
+    @Test
+    public void testRemoveKBooks() throws Exception {
+        Document book = new Document("id", "1").append("title", "t").append("author", "a").append("count", 5);
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        when(findIterable.first()).thenReturn(book);
+        when(mockBooksCollection.find(any(Bson.class))).thenReturn(findIterable);
+
+        // Mock the updateOne() method
+        UpdateResult updateResult = mock(UpdateResult.class);
+        when(mockBooksCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(updateResult);
+
+        // Call the method under test
+        databaseManager.removeKBooks("1", 5);
+
+        // Verify that find() was called with the correct filter
+        verify(mockBooksCollection).find(eq(new Document("id", "1")));
+
+        // Verify that updateOne() was called with the correct filter and update
+        // parameters
+        verify(mockBooksCollection).updateOne(
+                eq(new Document("id", "1")),
+                eq(new Document("$set", new Document("count", 0))));
+    }
 }

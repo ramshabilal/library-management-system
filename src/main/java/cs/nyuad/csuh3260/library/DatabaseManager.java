@@ -77,6 +77,10 @@ public class DatabaseManager {
         booksCollection.deleteOne(new Document("id", bookID));
     }
 
+    public void removeKBooks(String bookID, Integer count) throws Exception {
+
+    }
+
     // Close MongoDB client
     public void close() {
         mongoClient.close();

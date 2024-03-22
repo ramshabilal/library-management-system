@@ -15,5 +15,41 @@ public class SystemManager {
       return null;
     }
 
+    
+    public boolean reserve(String userID, String bookID) {
+        
+        return false;
+    }
+
+
+    public boolean returnBook(String userID, String bookID) {
+        
+        return false;
+
+    }
+
+    public void addNewBook(String title, String author) {
+        
+    }
+
+    public void addMoreBooks(String bookID, int count) {
+        
+    }
+
+    public void removeAllBook(String bookID) {
+        
+    }
+
+    public void removeKBooks(String bookID, int count) {
+        
+    }
+
+    public Map<String, Integer> getAvailabilityList() {
+        return availabilityList;
+    }
+
+    public Map<String, List<String>> getBookings() {
+        return bookings;
+    }
 
 }

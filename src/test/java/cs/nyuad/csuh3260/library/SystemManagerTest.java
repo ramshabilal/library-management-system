@@ -35,5 +35,18 @@ public class SystemManagerTest {
         verify(databaseManager, times(1)).getBooks();
     }
 
+    @Test
+    void testReserve_ValidUserAndBook_ReservesBook() {
+        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(new Book("Book 1", "Author 1")));
+        when(databaseManager.getUsers(anyList())).thenReturn(Collections.singletonList("1"));
+    
+        boolean result = system.reserve("1", "1");
+
+        assertTrue(result);
+        assertEquals(1, system.getBookings().get("1").size());
+        assertEquals("1", system.getBookings().get("1").get(0));
+        verify(databaseManager, times(1)).getBooks();
+        verify(databaseManager, times(1)).getUsers(anyList());
+    }
     
 }

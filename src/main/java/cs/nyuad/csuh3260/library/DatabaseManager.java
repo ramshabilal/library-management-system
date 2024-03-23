@@ -8,47 +8,45 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.internal.bulk.DeleteRequest;
 
 import org.bson.Document;
 
 public class DatabaseManager {
-
     private static final String DATABASE_NAME = "library_g3";
     private static final String COLLECTION_NAME = "books";
 
     private MongoClient mongoClient;
     private MongoDatabase database;
     private MongoCollection<Document> booksCollection;
+    private static final String USER_COLLECTION_NAME = "users";
+
+    private MongoCollection<Document> usersCollection;
 
     public DatabaseManager() {
         String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
         this.mongoClient = MongoClients.create(uri);
         this.database = mongoClient.getDatabase(DATABASE_NAME);
         this.booksCollection = database.getCollection(COLLECTION_NAME);
+        this.usersCollection = database.getCollection(USER_COLLECTION_NAME);
     }
 
-    public DatabaseManager(MongoDatabase database) {
-        String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
-        this.mongoClient = MongoClients.create(uri);
-        this.database = database;
-        this.booksCollection = database.getCollection(COLLECTION_NAME);
+    public DatabaseManager(MongoCollection<Document> booksCollection, MongoCollection<Document> usersCollection) {
+        this.booksCollection = booksCollection;
+        this.usersCollection = usersCollection;
     }
 
     // Method to retrieve all books from the database
     public List<Book> getBooks() {
-        List<Book> books = new ArrayList<>();
+        List<Book> books = new ArrayList<Book>();
         // Retrieve documents from the collection
-        try (MongoCursor<Document> cursor = booksCollection.find().iterator()) {
-            while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                String id = doc.getString("id");
-                String title = doc.getString("title");
-                String author = doc.getString("author");
-                Integer count = doc.getInteger("count");
-                books.add(new Book(id, title, author, count));
-            }
+        MongoCursor<Document> cursor = booksCollection.find().iterator();
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            String id = doc.getString("id");
+            String title = doc.getString("title");
+            String author = doc.getString("author");
+            Integer count = doc.getInteger("count");
+            books.add(new Book(id, title, author, count));
         }
         return books;
     }
@@ -94,6 +92,27 @@ public class DatabaseManager {
         } else {
             throw new Exception("No such book.");
         }
+    }
+
+    public void addUser(User user) {
+        Document doc = new Document("id", user.getId()).append("name", user.getName())
+                .append("username", user.getUsername())
+                .append("password", user.getPassword());
+        usersCollection.insertOne(doc);
+    }
+
+    public List<User> getUsers() {
+        List<User> users = new ArrayList<>();
+        MongoCursor<Document> cursor = usersCollection.find().iterator();
+        try {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                users.add(new User(doc.getString("name"), doc.getString("username"), doc.getString("password")));
+            }
+        } finally {
+            cursor.close();
+        }
+        return users;
     }
 
     // Close MongoDB client

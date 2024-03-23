@@ -32,6 +32,7 @@ public class UserTest {
 
         assertNotNull("User ID should not be null", user2.getId());
         assertEquals(false, user2.getId().isEmpty());
+        assertEquals(id, user2.getId());
 
         assertNotNull("User ID should not be null", user3.getId());
         assertEquals(false, user3.getId().isEmpty());

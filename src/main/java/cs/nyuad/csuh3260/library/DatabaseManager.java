@@ -92,7 +92,6 @@ public class DatabaseManager {
         } else {
             throw new Exception("No such book.");
         }
-        this.usersCollection = database.getCollection(USER_COLLECTION_NAME);
     }
 
     public void addUser(User user) {

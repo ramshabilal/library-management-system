@@ -57,6 +57,9 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddNewBook() {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
         // Given
         Book newBook = new Book("1", "New Book Title", "New Book Author", 1);
         Document expected = new Document("id", newBook.getID())
@@ -65,7 +68,11 @@ public class DatabaseManagerTest {
                 .append("count", newBook.getCount());
 
         InsertOneResult i = mock(InsertOneResult.class);
-        when(mockBooksCollection.insertOne(any(Document.class))).thenReturn(i);
+        Document doc = new Document("id", newBook.getID())
+                .append("title", newBook.getTitle())
+                .append("author", newBook.getAuthor())
+                .append("count", newBook.getCount());
+        when(mockBooksCollection.insertOne(doc)).thenReturn(i);
 
         // When
         databaseManager.addNewBook(newBook);
@@ -76,6 +83,9 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddMoreBooks() throws Exception {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
         assertNotNull(mockBooksCollection);
         Document book = new Document("id", "1").append("title", "t").append("author", "a").append("count", 5);
         FindIterable<Document> findIterable = mock(FindIterable.class);
@@ -101,8 +111,12 @@ public class DatabaseManagerTest {
 
     @Test
     public void testRemoveAllBook() {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
+        assertNotNull(mockBooksCollection);
         DeleteResult mockRes = mock(DeleteResult.class);
-        when(mockBooksCollection.deleteOne(any(Document.class))).thenReturn(mockRes);
+        when(mockBooksCollection.deleteOne(new Document("id", "1"))).thenReturn(mockRes);
 
         databaseManager.removeAllBook("1");
 
@@ -111,6 +125,9 @@ public class DatabaseManagerTest {
 
     @Test
     public void testRemoveKBooks() throws Exception {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
         Document book = new Document("id", "1").append("title", "t").append("author", "a").append("count", 5);
         FindIterable<Document> findIterable = mock(FindIterable.class);
         when(findIterable.first()).thenReturn(book);
@@ -152,6 +169,9 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddUser() {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
         // Given
         String id = UUID.randomUUID().toString();
         User user = new User(id, "John Doe", "johndoe", "password123");
@@ -159,7 +179,11 @@ public class DatabaseManagerTest {
                 .append("password", "password123");
 
         InsertOneResult a = mock(InsertOneResult.class);
-        when(mockUsersCollection.insertOne(any(Document.class))).thenReturn(a);
+        Document doc = new Document("id", user.getId())
+                .append("name", user.getName())
+                .append("username", user.getUsername())
+                .append("password", user.getPassword());
+        when(mockUsersCollection.insertOne(doc)).thenReturn(a);
 
         // When
         databaseManager.addUser(user);

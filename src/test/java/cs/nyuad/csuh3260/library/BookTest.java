@@ -19,6 +19,7 @@ public class BookTest {
     @Test
     public void testBookCreation() {
         // Create some books
+        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
         Book book2 = new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee", 1);
         Book book3 = new Book(UUID.randomUUID().toString(), "1984", "George Orwell", 1);
 
@@ -33,6 +34,7 @@ public class BookTest {
 
     @Test
     public void testGetters() {
+        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
         // Test getters
         assertEquals("The Great Gatsby", book.getTitle());
         assertEquals("F. Scott Fitzgerald", book.getAuthor());
@@ -40,6 +42,7 @@ public class BookTest {
 
     @Test
     public void testSetTitle() {
+        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
         // Set a new title
         book.setTitle("To Kill a Mockingbird");
 
@@ -49,6 +52,7 @@ public class BookTest {
 
     @Test
     public void testSetAuthor() {
+        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
         // Set a new author
         book.setAuthor("Harper Lee");
 

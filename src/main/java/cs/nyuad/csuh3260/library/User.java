@@ -3,12 +3,12 @@ package cs.nyuad.csuh3260.library;
 import java.util.UUID;
 
 public class User {
-    
+
     private String name;
     private String username;
     private String password;
     private String id;
-    
+
     public User(String name, String username, String password) {
         this.name = name;
         this.username = username;
@@ -32,7 +32,7 @@ public class User {
     }
 
     public String getPassword() {
-       return password;
+        return password;
     }
 
     public String getId() {
@@ -45,5 +45,9 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isAdmin() {
+        return username.equals("admin") && password.equals("admin");
     }
 }

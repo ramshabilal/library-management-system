@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.print.Doc;
 
@@ -32,12 +33,15 @@ public class DatabaseManagerTest {
     private DatabaseManager databaseManager;
     private MongoDatabase mockDatabase;
     private MongoCollection<Document> mockBooksCollection;
+    private MongoCollection<Document> mockUsersCollection;
 
     @BeforeEach
     public void setUp() {
         mockDatabase = mock(MongoDatabase.class);
         mockBooksCollection = mock(MongoCollection.class);
         when(mockDatabase.getCollection("books")).thenReturn(mockBooksCollection);
+        mockUsersCollection = mock(MongoCollection.class);
+        when(mockDatabase.getCollection("users")).thenReturn(mockUsersCollection);
         databaseManager = new DatabaseManager(mockDatabase);
     }
 
@@ -134,5 +138,39 @@ public class DatabaseManagerTest {
         verify(mockBooksCollection).updateOne(
                 eq(new Document("id", "1")),
                 eq(new Document("$set", new Document("count", 0))));
+    }
+
+    public void testGetUsers() {
+        databaseManager = mock(DatabaseManager.class);
+        List<User> expected = new ArrayList<>();
+        expected.add(new User("John Doe", "johndoe", "password123"));
+        expected.add(new User("Jane Smith", "janesmith", "password456"));
+
+        when(databaseManager.getUsers()).thenReturn(expected);
+
+        // When
+        List<User> actualUsers = databaseManager.getUsers();
+
+        // Then
+        assertNotNull(actualUsers);
+        assertEquals(expected, actualUsers);
+        assertEquals(expected.size(), actualUsers.size());
+    }
+
+    @Test
+    public void testAddUser() {
+        // Given
+        String id = UUID.randomUUID().toString();
+        User user = new User(id, "John Doe", "johndoe", "password123");
+        Document expected = new Document("id", id).append("name", "John Doe").append("username", "johndoe").append("password", "password123");
+
+        InsertOneResult a = mock(InsertOneResult.class);
+        when(mockUsersCollection.insertOne(any(Document.class))).thenReturn(a);
+
+        // When
+        databaseManager.addUser(user);
+
+        // Then
+        verify(mockUsersCollection).insertOne(eq(expected));
     }
 }

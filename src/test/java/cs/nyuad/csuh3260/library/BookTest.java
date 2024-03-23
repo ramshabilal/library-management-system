@@ -19,16 +19,15 @@ public class BookTest {
     @Test
     public void testBookCreation() {
         // Create some books
-        Book book1 = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
         Book book2 = new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee", 1);
         Book book3 = new Book(UUID.randomUUID().toString(), "1984", "George Orwell", 1);
 
         // Test that IDs are not null and unique
-        assertNotNull(book1.getID());
+        assertNotNull(book.getID());
         assertNotNull(book2.getID());
         assertNotNull(book3.getID());
-        assertNotEquals(book1.getID(), book2.getID());
-        assertNotEquals(book1.getID(), book3.getID());
+        assertNotEquals(book.getID(), book2.getID());
+        assertNotEquals(book.getID(), book3.getID());
         assertNotEquals(book2.getID(), book3.getID());
     }
 

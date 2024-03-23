@@ -8,15 +8,15 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-// import com.mongodb.client.result.DeleteResult;
-// import com.mongodb.internal.bulk.DeleteRequest;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.internal.bulk.DeleteRequest;
 
 import org.bson.Document;
 
 public class DatabaseManager {
 
     private static final String DATABASE_NAME = "library_g3";
-    private static final String COLLECTION_NAME = "users";
+    private static final String USER_COLLECTION_NAME = "users";
 
     private MongoClient mongoClient;
     private MongoDatabase database;
@@ -26,14 +26,14 @@ public class DatabaseManager {
         String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
         this.mongoClient = MongoClients.create(uri);
         this.database = mongoClient.getDatabase(DATABASE_NAME);
-        this.usersCollection = database.getCollection(COLLECTION_NAME);
+        this.usersCollection = database.getCollection(USER_COLLECTION_NAME);
     }
 
     public DatabaseManager(MongoDatabase database) {
         String uri = "mongodb+srv://ramshabilal:RsRRPoY9gZCVNjhi@cluster0.siam2zv.mongodb.net/library_g3?retryWrites=true&w=majority&appName=Cluster0";
         this.mongoClient = MongoClients.create(uri);
         this.database = database;
-        this.usersCollection = database.getCollection(COLLECTION_NAME);
+        this.usersCollection = database.getCollection(USER_COLLECTION_NAME);
     }
 
     public void addUser(User user) {

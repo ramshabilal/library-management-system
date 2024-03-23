@@ -76,10 +76,11 @@ public class DatabaseManagerTest {
 
     @Test
     public void testAddMoreBooks() throws Exception {
+        assertNotNull(mockBooksCollection);
         Document book = new Document("id", "1").append("title", "t").append("author", "a").append("count", 5);
         FindIterable<Document> findIterable = mock(FindIterable.class);
         when(findIterable.first()).thenReturn(book);
-        when(mockBooksCollection.find(any(Bson.class))).thenReturn(findIterable);
+        when(mockBooksCollection.find(new Document("id", "1"))).thenReturn(findIterable);
 
         // Mock the updateOne() method
         UpdateResult updateResult = mock(UpdateResult.class);

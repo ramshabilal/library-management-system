@@ -1,0 +1,45 @@
+name: Build & test project
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: "8"
+          distribution: "zulu"
+      - name: Run unit tests
+        working-directory: .
+        run: |
+          mvn test
+
+      - name: Calculate mutation score
+        working-directory: .
+        run: |
+          # fail the build if mutation score is less than 80%
+          mvn test-compile org.pitest:pitest-maven:mutationCoverage -DmutationThreshold=80
+
+      - name: Log coverage percentage
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+      - name: Commit and push the badge (if it changed)
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: "Update coverage badge"
+          add: "*.svg"

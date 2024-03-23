@@ -16,10 +16,11 @@ public class UserTest {
 
     @Test
     public void testUserCreation() {
+        user = new User("John Doe", "johndoe", "john123");
         // user 1 is user created in setUp()
         String id = UUID.randomUUID().toString();
-       User user2 = new User(id, "Tom Smith", "tomsmith", "tom123");
-       User user3 = new User("Sara Johnson", "sarajohnson", "sara123");
+        User user2 = new User(id, "Tom Smith", "tomsmith", "tom123");
+        User user3 = new User("Sara Johnson", "sarajohnson", "sara123");
 
         // Check that created users are not null
         assertNotNull(user);
@@ -28,7 +29,7 @@ public class UserTest {
 
         // Check that created user IDs are not null
         assertNotNull("User ID should not be null", user.getId());
-        assertEquals(false, user.getId().isEmpty()); 
+        assertEquals(false, user.getId().isEmpty());
 
         assertNotNull("User ID should not be null", user2.getId());
         assertEquals(false, user2.getId().isEmpty());
@@ -40,11 +41,12 @@ public class UserTest {
         // Check that created user IDs are unique
         assertNotEquals(user.getId(), user2.getId());
         assertNotEquals(user.getId(), user3.getId());
-        assertNotEquals(user2.getId(), user3.getId());        
+        assertNotEquals(user2.getId(), user3.getId());
     }
 
     @Test
     public void testGetters() {
+        user = new User("John Doe", "johndoe", "john123");
         assertEquals("John Doe", user.getName());
         assertEquals("johndoe", user.getUsername());
         assertEquals("john123", user.getPassword());
@@ -52,16 +54,16 @@ public class UserTest {
 
     @Test
     public void testSetName() {
+        user = new User("John Doe", "johndoe", "john123");
         user.setName("Jane Doe");
         assertEquals("Jane Doe", user.getName());
     }
 
     @Test
     public void testSetPassword() {
+        user = new User("John Doe", "johndoe", "john123");
         user.setPassword("jane123");
         assertEquals("jane123", user.getPassword());
     }
-
-
 
 }

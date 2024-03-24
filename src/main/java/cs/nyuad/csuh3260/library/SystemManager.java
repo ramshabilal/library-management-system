@@ -1,14 +1,21 @@
 package cs.nyuad.csuh3260.library;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class SystemManager {
 
     private Scanner scanner;
     private User curUser;
+    private DatabaseManager databaseManager;
 
     public SystemManager() {
         scanner = new Scanner(System.in);
+        databaseManager = new DatabaseManager();
+    }
+
+    public SystemManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
     }
 
     public boolean login(String username, String password) {

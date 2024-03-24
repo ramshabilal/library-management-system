@@ -4,14 +4,14 @@ import java.util.*;
 
 public class SystemManager {
     private DatabaseManager databaseManager;
-    private Map<String, Integer> availabilityList;
     private Map<String, List<String>> bookings;
-    public User curUser;
+    private User curUser;
+    private Map<String, Integer> availabilityList;
 
     public SystemManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        this.availabilityList = new HashMap<>();
         this.bookings = new HashMap<>();
+        this.availabilityList = new HashMap<>();
         initializeAvailabilityList();
     }
 
@@ -52,12 +52,20 @@ public class SystemManager {
     }
 
 
-    public boolean returnBook(String userID, String bookID) {
-        
+    public boolean returnBook(String bookID) {
+        // Check if the book is currently borrowed by the user
+        if (bookings.containsKey(curUser.getId()) && bookings.get(curUser.getId()).contains(bookID)) {
+            // Remove the book from the user's bookings
+            bookings.get(curUser.getId()).remove(bookID);
+            
+            // Increase the availability count of the book
+            int updatedCount = availabilityList.get(bookID) + 1;
+            availabilityList.put(bookID, updatedCount);
+            
+            return true;
+        }
         return false;
-
     }
-
     public void addNewBook(String title, String author) {
         
     }
@@ -80,6 +88,10 @@ public class SystemManager {
 
     public Map<String, List<String>> getBookings() {
         return bookings;
+    }
+
+    public void setCurUser(User curUser) {
+        this.curUser = curUser;
     }
 
 }

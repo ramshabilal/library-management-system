@@ -108,10 +108,7 @@ public class DatabaseManager {
 
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
-        FindIterable<Document> i = usersCollection.find();
-        System.out.println("ZULYA:");
-        System.out.println(i);
-        MongoCursor<Document> cursor = i.iterator();
+        MongoCursor<Document> cursor = usersCollection.find().iterator();
         while (cursor.hasNext()) {
             Document doc = cursor.next();
             String name = doc.getString("name");

@@ -177,7 +177,6 @@ public class SystemManagerTest {
 
         systemManager.userProgram();
         verify(systemManager).reserve("1");
-        ;
     }
 
     @Test
@@ -191,7 +190,6 @@ public class SystemManagerTest {
 
         systemManager.userProgram();
         verify(systemManager).returnBook("1");
-        ;
     }
 
     @Test
@@ -205,7 +203,74 @@ public class SystemManagerTest {
 
         systemManager.userProgram();
         verify(systemOut).println("Unrecognized command.");
-        ;
+    }
+
+    @Test
+    public void testLoginWhenRun() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(scanner.nextLine()).thenReturn("login 1,1")
+                .thenReturn("exit");
+
+        when(systemManager.login("1", "1")).thenReturn(true);
+
+        systemManager.run();
+        verify(systemManager).login("1", "1");
+
+        // Check for print when login with incorrect arguments
+        scanner = mock(Scanner.class);
+        systemOut = mock(PrintStream.class);
+        systemManager = new SystemManager(scanner, systemOut);
+
+        when(scanner.nextLine()).thenReturn("login 1,1,1")
+                .thenReturn("exit");
+
+        systemManager.run();
+        verify(systemOut).println("Invalid number of arguments. Please try again.");
+    }
+
+    @Test
+    public void testSignupWhenRun() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(scanner.nextLine()).thenReturn("signup 1,1,1")
+                .thenReturn("exit");
+
+        when(systemManager.signup("1", "1", "1")).thenReturn(true);
+
+        systemManager.run();
+        verify(systemManager).signup("1", "1", "1");
+    }
+
+    @Test
+    public void testUnrecognizedCommandWhenRun() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = new SystemManager(scanner, systemOut);
+
+        when(scanner.nextLine()).thenReturn("command 1")
+                .thenReturn("exit");
+
+        systemManager.run();
+        verify(systemOut).println("Invalid command. Please try again.");
+    }
+
+    @Test
+    public void testAdminProgramWhenRun() {
+        Scanner scanner = mock(Scanner.class);
+        when(scanner.nextLine()).thenReturn("login admin,admin").thenReturn("exit");
+
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(systemManager.login("admin", "admin")).thenReturn(true);
+
+        systemManager.run();
+        verify(systemManager).adminProgram();
     }
 
 }

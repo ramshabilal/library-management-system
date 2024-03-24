@@ -24,7 +24,18 @@ public class SystemManager {
     }
 
     public boolean signup(String name, String username, String password) {
-        curUser = new User(name, username, password);
+        // check if user exists
+        List<User> users = databaseManager.getUsers();
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                System.out.println("User with same username already exists");
+                return false;
+            }
+        }
+        // create the user
+        User newUser = new User(name, username, password);
+        databaseManager.addUser(newUser);
+        curUser = newUser;
         return true;
     }
 

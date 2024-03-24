@@ -3,6 +3,7 @@ package cs.nyuad.csuh3260.library;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -33,6 +34,10 @@ public class DatabaseManager {
     public DatabaseManager(MongoCollection<Document> booksCollection, MongoCollection<Document> usersCollection) {
         this.booksCollection = booksCollection;
         this.usersCollection = usersCollection;
+    }
+
+    public DatabaseManager(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
     }
 
     // Method to retrieve all books from the database
@@ -103,14 +108,16 @@ public class DatabaseManager {
 
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
-        MongoCursor<Document> cursor = usersCollection.find().iterator();
-        try {
-            while (cursor.hasNext()) {
-                Document doc = cursor.next();
-                users.add(new User(doc.getString("name"), doc.getString("username"), doc.getString("password")));
-            }
-        } finally {
-            cursor.close();
+        FindIterable<Document> i = usersCollection.find();
+        System.out.println("ZULYA:");
+        System.out.println(i);
+        MongoCursor<Document> cursor = i.iterator();
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            String name = doc.getString("name");
+            String username = doc.getString("username");
+            String password = doc.getString("password");
+            users.add(new User(name, username, password));
         }
         return users;
     }

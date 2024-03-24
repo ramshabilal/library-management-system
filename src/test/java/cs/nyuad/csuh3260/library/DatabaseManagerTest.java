@@ -19,7 +19,9 @@ import java.util.UUID;
 import javax.print.Doc;
 
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
@@ -37,22 +39,49 @@ public class DatabaseManagerTest {
         databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
     }
 
+    public Document convertBookToDocument(Book book) {
+        Document doc = new Document("id", book.getID())
+                .append("title", book.getTitle())
+                .append("author", book.getAuthor())
+                .append("count", book.getCount());
+        return doc;
+    }
+
+    public Document convertUserToDocument(User user) {
+        Document doc = new Document("name", user.getName())
+                .append("username", user.getUsername())
+                .append("password", user.getPassword());
+        return doc;
+    }
+
     @Test
     public void testGetBooks() {
-        databaseManager = mock(DatabaseManager.class);
-        List<Book> expected = new ArrayList();
-        expected.add(new Book("1", "Title 1", "Author 1", 1));
-        expected.add(new Book("2", "Title 2", "Author 2", 1));
+        mockBooksCollection = mock(MongoCollection.class);
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        MongoCursor<Document> iterator = mock(MongoCursor.class);
+        Book book1 = new Book("1", "1", "1", 1);
+        Book book2 = new Book("2", "2", "2", 2);
+        List<Document> expectedBooks = new ArrayList<Document>();
+        expectedBooks.add(convertBookToDocument(book1));
+        expectedBooks.add(convertBookToDocument(book2));
 
-        when(databaseManager.getBooks()).thenReturn(expected);
+        when(iterator.hasNext())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+        when(iterator.next())
+                .thenReturn(expectedBooks.get(0))
+                .thenReturn(expectedBooks.get(1));
+        when(findIterable.iterator()).thenReturn(iterator);
+        when(mockBooksCollection.find()).thenReturn(findIterable);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
 
-        // When
-        List<Book> actualBooks = databaseManager.getBooks();
-
-        // Then
-        assertNotNull(actualBooks);
-        assertEquals(expected.size(), actualBooks.size());
-        assertEquals(expected, actualBooks);
+        List<Book> actual = databaseManager.getBooks();
+        assertEquals(actual.size(), 2);
+        for (int i = 0; i < expectedBooks.size(); i++) {
+            assertEquals(expectedBooks.get(i), convertBookToDocument(actual.get(i)));
+        }
     }
 
     @Test
@@ -110,6 +139,22 @@ public class DatabaseManagerTest {
     }
 
     @Test
+    public void testAddMoreBooksWhenNoBook() throws Exception {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
+
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        when(findIterable.first()).thenReturn(null);
+        when(mockBooksCollection.find(new Document("id", "1"))).thenReturn(findIterable);
+
+        // Call the method under test
+        assertThrows(Exception.class, () -> {
+            databaseManager.addMoreBooks("1", 1);
+        });
+    }
+
+    @Test
     public void testRemoveAllBook() {
         mockBooksCollection = mock(MongoCollection.class);
         mockUsersCollection = mock(MongoCollection.class);
@@ -150,21 +195,43 @@ public class DatabaseManagerTest {
                 eq(new Document("$set", new Document("count", 0))));
     }
 
-    public void testGetUsers() {
-        databaseManager = mock(DatabaseManager.class);
-        List<User> expected = new ArrayList<>();
-        expected.add(new User("John Doe", "johndoe", "password123"));
-        expected.add(new User("Jane Smith", "janesmith", "password456"));
+    @Test
+    public void testRemoveKMoreBooksThanCount() throws Exception {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
+        Document book = new Document("id", "1")
+                .append("title", "t")
+                .append("author", "a")
+                .append("count", 5);
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        when(findIterable.first()).thenReturn(book);
+        when(mockBooksCollection.find(any(Bson.class))).thenReturn(findIterable);
 
-        when(databaseManager.getUsers()).thenReturn(expected);
+        // Mock the updateOne() method
+        UpdateResult updateResult = mock(UpdateResult.class);
+        when(mockBooksCollection.updateOne(any(Bson.class), any(Bson.class))).thenReturn(updateResult);
 
-        // When
-        List<User> actualUsers = databaseManager.getUsers();
+        // Call the method under test
+        assertThrows(Exception.class, () -> {
+            databaseManager.removeKBooks("1", 6);
+        });
+    }
 
-        // Then
-        assertNotNull(actualUsers);
-        assertEquals(expected, actualUsers);
-        assertEquals(expected.size(), actualUsers.size());
+    @Test
+    public void testRemoveKMoreBooksWhenNoBook() throws Exception {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
+
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        when(findIterable.first()).thenReturn(null);
+        when(mockBooksCollection.find(any(Bson.class))).thenReturn(findIterable);
+
+        // Call the method under test
+        assertThrows(Exception.class, () -> {
+            databaseManager.removeKBooks("1", 5);
+        });
     }
 
     @Test
@@ -190,5 +257,46 @@ public class DatabaseManagerTest {
 
         // Then
         verify(mockUsersCollection).insertOne(eq(expected));
+    }
+
+    @Test
+    public void testGetUsers() {
+        mockBooksCollection = mock(MongoCollection.class);
+        mockUsersCollection = mock(MongoCollection.class);
+        FindIterable<Document> findIterable = mock(FindIterable.class);
+        MongoCursor<Document> iterator = mock(MongoCursor.class);
+        User user1 = new User("1", "1", "1");
+        User user2 = new User("2", "2", "2");
+        List<Document> expectedUsers = new ArrayList<Document>();
+        expectedUsers.add(convertUserToDocument(user1));
+        expectedUsers.add(convertUserToDocument(user2));
+
+        when(iterator.hasNext())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+        when(iterator.next())
+                .thenReturn(expectedUsers.get(0))
+                .thenReturn(expectedUsers.get(1));
+        when(findIterable.iterator()).thenReturn(iterator);
+        when(mockUsersCollection.find()).thenReturn(findIterable);
+        databaseManager = new DatabaseManager(mockBooksCollection, mockUsersCollection);
+
+        List<User> actual = databaseManager.getUsers();
+
+        assertEquals(actual.size(), 2);
+        for (int i = 0; i < expectedUsers.size(); i++) {
+            assertEquals(expectedUsers.get(i), convertUserToDocument(actual.get(i)));
+        }
+    }
+
+    @Test
+    public void testCose() {
+        MongoClient client = mock(MongoClient.class);
+        databaseManager = new DatabaseManager(client);
+
+        databaseManager.close();
+
+        verify(client).close();
     }
 }

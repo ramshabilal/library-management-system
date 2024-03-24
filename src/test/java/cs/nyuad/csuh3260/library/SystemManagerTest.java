@@ -104,6 +104,19 @@ public class SystemManagerTest {
         assertNotNull(availabilityList);
         assertFalse(system.getAvailabilityList().containsKey("1"));
     }
+
+    @Test
+    void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
+        Book book = new Book("1", "Book 1", "Author 1", 1);
+        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+        
+        system.getAvailabilityList().put("1", 5); // Set the initial book count to 5
+        system.removeKBooks("1", 3);
+        
+        Map<String, Integer> availabilityList = system.getAvailabilityList();
+        assertNotNull(availabilityList);
+        assertEquals(2, availabilityList.getOrDefault("1", 0));
+    }
     
     
 }

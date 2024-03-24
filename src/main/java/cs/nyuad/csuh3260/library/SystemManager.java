@@ -108,8 +108,20 @@ public class SystemManager {
         
     }
 
-    public void removeKBooks(String bookID, int count) {
-        
+    public boolean removeKBooks(String bookID, int count) {
+        // Check if the book exists and has sufficient quantity
+        if (!availabilityList.containsKey(bookID) || availabilityList.get(bookID) < count) {
+            return false; // Book does not exist or insufficient quantity
+        }
+        try {
+            databaseManager.removeKBooks(bookID, count);
+            int availableCount = availabilityList.get(bookID);
+            availabilityList.put(bookID, availableCount - count);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private String generateBookId() {

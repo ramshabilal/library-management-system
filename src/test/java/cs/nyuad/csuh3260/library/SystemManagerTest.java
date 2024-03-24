@@ -45,7 +45,7 @@ public class SystemManagerTest {
         systemOut = mock(PrintStream.class);
         systemManager = new SystemManager(scanner, systemOut);
 
-        when(scanner.nextLine()).thenReturn("addBook")
+        when(scanner.nextLine()).thenReturn("addBook 1,1,1")
                 .thenReturn("exit");
 
         systemManager.adminProgram();
@@ -69,7 +69,7 @@ public class SystemManagerTest {
         systemOut = mock(PrintStream.class);
         systemManager = new SystemManager(scanner, systemOut);
 
-        when(scanner.nextLine()).thenReturn("addMoreBooks")
+        when(scanner.nextLine()).thenReturn("addMoreBooks 1,1,1")
                 .thenReturn("exit");
 
         systemManager.adminProgram();
@@ -137,6 +137,75 @@ public class SystemManagerTest {
 
         systemManager.adminProgram();
         verify(systemOut).println("Unrecognized command.");
+    }
+
+    @Test
+    public void testUserProgramWithIncorrectArguments() {
+        // Check for print when incorrect arguments
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = new SystemManager(scanner, systemOut);
+
+        when(scanner.nextLine()).thenReturn("addBook")
+                .thenReturn("exit");
+
+        systemManager.userProgram();
+        verify(systemOut).println("Invalid command. Please try again.");
+    }
+
+    @Test
+    public void testSearchWhenUserProgram() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(scanner.nextLine()).thenReturn("search 1")
+                .thenReturn("exit");
+
+        systemManager.userProgram();
+        verify(systemManager).search("1");
+    }
+
+    @Test
+    public void testReserveWhenUserProgram() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(scanner.nextLine()).thenReturn("reserve 1")
+                .thenReturn("exit");
+
+        systemManager.userProgram();
+        verify(systemManager).reserve("1");
+        ;
+    }
+
+    @Test
+    public void testReturnBookWhenUserProgram() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+
+        when(scanner.nextLine()).thenReturn("returnBook 1")
+                .thenReturn("exit");
+
+        systemManager.userProgram();
+        verify(systemManager).returnBook("1");
+        ;
+    }
+
+    @Test
+    public void testUnrecognizedCommandWhenUserProgram() {
+        Scanner scanner = mock(Scanner.class);
+        PrintStream systemOut = mock(PrintStream.class);
+        SystemManager systemManager = new SystemManager(scanner, systemOut);
+
+        when(scanner.nextLine()).thenReturn("command 1")
+                .thenReturn("exit");
+
+        systemManager.userProgram();
+        verify(systemOut).println("Unrecognized command.");
+        ;
     }
 
 }

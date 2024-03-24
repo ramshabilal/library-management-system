@@ -247,10 +247,10 @@ public class SystemManager {
         }
     }
 
-    private void reserve(String bookID) {
+    public void reserve(String bookID) {
     }
 
-    private void returnBook(String bookID) {
+    public void returnBook(String bookID) {
     }
 
     public static void main(String[] args) {

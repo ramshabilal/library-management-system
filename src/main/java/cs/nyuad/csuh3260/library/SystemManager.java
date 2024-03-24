@@ -97,7 +97,14 @@ public class SystemManager {
         
     }
 
-    public void removeAllBook(String bookID) {
+    public boolean removeAllBook(String bookID) {
+         // Check if the book exists
+         if (!availabilityList.containsKey(bookID)) {
+            return false; // Book does not exist
+        }
+        databaseManager.removeAllBook(bookID);
+        availabilityList.remove(bookID);
+        return true;
         
     }
 

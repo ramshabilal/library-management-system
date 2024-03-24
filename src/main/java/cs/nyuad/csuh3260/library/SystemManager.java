@@ -66,8 +66,19 @@ public class SystemManager {
         }
         return false;
     }
-    public void addNewBook(String title, String author) {
-        
+    public boolean addNewBook(String title, String author) {
+        // Check if a book with the same title and author already exists
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
+                return false; // Book already exists
+            }
+        }
+        String bookId = generateBookId();
+        Book book = new Book(bookId, title, author, 0);
+        databaseManager.addNewBook(book);
+        availabilityList.put(bookId, 0);
+        return true;
     }
 
     public void addMoreBooks(String bookID, int count) {
@@ -80,6 +91,18 @@ public class SystemManager {
 
     public void removeKBooks(String bookID, int count) {
         
+    }
+
+    private String generateBookId() {
+        List<Book> allBooks = databaseManager.getBooks();
+        int maxId = 0;
+        for (Book book : allBooks) {
+            int currentId = Integer.parseInt(book.getID());
+            if (currentId > maxId) {
+                maxId = currentId;
+            }
+        }
+        return String.valueOf(maxId + 1);
     }
 
     public Map<String, Integer> getAvailabilityList() {

@@ -73,5 +73,12 @@ public class SystemManagerTest {
         
     }
     
-   
+    @Test
+    void testAddNewBook_ValidBook_AddsBookToDatabase() {
+        system.addNewBook("Book 1", "Author 1");
+        
+        verify(databaseManager, times(1)).addNewBook(any(Book.class));
+    }
+    
+    
 }

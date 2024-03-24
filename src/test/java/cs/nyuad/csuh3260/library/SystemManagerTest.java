@@ -15,12 +15,17 @@ import org.junit.jupiter.api.Test;
 public class SystemManagerTest {
 
     private SystemManager systemManager;
+    private DatabaseManager dbManager;
+
+    private void setup() {
+        dbManager = mock(DatabaseManager.class);
+        systemManager = new SystemManager(dbManager);
+    }
 
     @Test
     public void testSingupSuccessfully() {
-        DatabaseManager dbManager = mock(DatabaseManager.class);
-        when(dbManager.getUsers()).thenReturn(new ArrayList<User>());
-        systemManager = new SystemManager(dbManager);
+        setup();
+        when(dbManager.getUsers()).thenReturn(new ArrayList<>());
 
         boolean status = systemManager.signup("a", "a", "a");
         verify(dbManager).addUser(any());
@@ -29,10 +34,9 @@ public class SystemManagerTest {
 
     @Test
     public void testSingupWithExistingUsername() {
-        DatabaseManager dbManager = mock(DatabaseManager.class);
+        setup();
         List<User> users = List.of(new User("a", "a", "a"));
         when(dbManager.getUsers()).thenReturn(users);
-        systemManager = new SystemManager(dbManager);
 
         boolean status = systemManager.signup("a", "a", "a");
         assertFalse(status);
@@ -40,9 +44,8 @@ public class SystemManagerTest {
 
     @Test
     public void testLoginSuccessfully() {
-        DatabaseManager dbManager = mock(DatabaseManager.class);
+        setup();
         List<User> users = List.of(new User("a", "a", "a"));
-        systemManager = new SystemManager(dbManager);
         when(dbManager.getUsers()).thenReturn(users);
 
         boolean status = systemManager.login("a", "a");
@@ -51,9 +54,8 @@ public class SystemManagerTest {
 
     @Test
     public void testLoginFail() {
-        DatabaseManager dbManager = mock(DatabaseManager.class);
+        setup();
         List<User> users = List.of(new User("a", "a", "a"));
-        systemManager = new SystemManager(dbManager);
         when(dbManager.getUsers()).thenReturn(users);
 
         boolean status = systemManager.login("b", "b");

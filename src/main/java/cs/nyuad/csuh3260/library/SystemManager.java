@@ -19,8 +19,17 @@ public class SystemManager {
     }
 
     public boolean login(String username, String password) {
-        curUser = new User(username, username, password);
-        return true;
+        // check if user exists
+        List<User> users = databaseManager.getUsers();
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                curUser = user;
+                return true;
+            }
+        }
+        // no such user in system
+        System.out.println("User doesn't exist!");
+        return false;
     }
 
     public boolean signup(String name, String username, String password) {

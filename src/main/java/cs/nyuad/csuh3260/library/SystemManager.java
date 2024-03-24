@@ -3,14 +3,25 @@ package cs.nyuad.csuh3260.library;
 import java.util.*;
 
 public class SystemManager {
-
     private DatabaseManager databaseManager;
     private Map<String, Integer> availabilityList;
     private Map<String, List<String>> bookings;
+    public User curUser;
 
     public SystemManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
+        this.availabilityList = new HashMap<>();
+        this.bookings = new HashMap<>();
+        initializeAvailabilityList();
     }
+
+    private void initializeAvailabilityList() {
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            availabilityList.put(book.getID(), book.getCount());
+        }
+    }
+
 
     //login, sign up,
 
@@ -30,8 +41,13 @@ public class SystemManager {
     }
 
     
-    public boolean reserve(String userID, String bookID) {
-        
+    public boolean reserve(String bookID) {
+        if (availabilityList.containsKey(bookID) && availabilityList.get(bookID) > 0) {
+            // minuses 1 if available
+            availabilityList.put(bookID, availabilityList.get(bookID) - 1);
+            bookings.computeIfAbsent(curUser.getId(), k -> new ArrayList<>()).add(bookID);
+            return true;
+        }
         return false;
     }
 

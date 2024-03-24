@@ -38,4 +38,26 @@ public class SystemManagerTest {
         assertFalse(status);
     }
 
+    @Test
+    public void testLoginSuccessfully() {
+        DatabaseManager dbManager = mock(DatabaseManager.class);
+        List<User> users = List.of(new User("a", "a", "a"));
+        systemManager = new SystemManager(dbManager);
+        when(dbManager.getUsers()).thenReturn(users);
+
+        boolean status = systemManager.login("a", "a");
+        assertTrue(status);
+    }
+
+    @Test
+    public void testLoginFail() {
+        DatabaseManager dbManager = mock(DatabaseManager.class);
+        List<User> users = List.of(new User("a", "a", "a"));
+        systemManager = new SystemManager(dbManager);
+        when(dbManager.getUsers()).thenReturn(users);
+
+        boolean status = systemManager.login("b", "b");
+        assertFalse(status);
+    }
+
 }

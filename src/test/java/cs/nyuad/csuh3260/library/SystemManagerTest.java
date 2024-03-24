@@ -80,5 +80,20 @@ public class SystemManagerTest {
         verify(databaseManager, times(1)).addNewBook(any(Book.class));
     }
     
+    @Test
+    void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
+        Book book = new Book("1", "Book 1", "Author 1", 1);
+        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+        
+        system.getAvailabilityList().put("1", 1);
+        system.addMoreBooks("1", 5);
+        
+        Map<String, Integer> availabilityList = system.getAvailabilityList();
+        assertNotNull(availabilityList);
+        assertEquals(6, availabilityList.getOrDefault("1", 0));
+        // verify(databaseManager, times(1)).addMoreBooks("1", 5);
+        // verify(databaseManager, times(1)).getBooks();
+    }
+    
     
 }

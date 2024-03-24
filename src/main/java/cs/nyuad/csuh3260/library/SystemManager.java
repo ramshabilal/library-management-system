@@ -81,7 +81,19 @@ public class SystemManager {
         return true;
     }
 
-    public void addMoreBooks(String bookID, int count) {
+    public boolean addMoreBooks(String bookID, int count) {
+        // Check if the book exists
+        if (!availabilityList.containsKey(bookID)) {
+            return false; // Book does not exist
+        }
+        try {
+            databaseManager.addMoreBooks(bookID, count);
+            availabilityList.put(bookID, availabilityList.get(bookID) + count);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
         
     }
 

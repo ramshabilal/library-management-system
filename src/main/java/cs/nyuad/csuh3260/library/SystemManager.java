@@ -8,11 +8,25 @@ public class SystemManager {
     private Map<String, Integer> availabilityList;
     private Map<String, List<String>> bookings;
 
+    public SystemManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
+
     //login, sign up,
 
     public List<Book> search(List<String> keywords) {
         
-      return null;
+        List<Book> matchingBooks = new ArrayList<>();
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            for (String keyword : keywords) {
+                if (book.getTitle().contains(keyword) || book.getAuthor().contains(keyword)) {
+                    matchingBooks.add(book);
+                    break;
+                }
+            }
+        }
+        return matchingBooks;
     }
 
     

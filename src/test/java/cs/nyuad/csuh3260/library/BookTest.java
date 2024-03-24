@@ -1,6 +1,5 @@
 package cs.nyuad.csuh3260.library;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
@@ -10,7 +9,6 @@ public class BookTest {
 
     private Book book;
 
-    @BeforeEach
     public void setUp() {
         // Create a book
         book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
@@ -19,7 +17,7 @@ public class BookTest {
     @Test
     public void testBookCreation() {
         // Create some books
-        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
+        setUp();
         Book book2 = new Book(UUID.randomUUID().toString(), "To Kill a Mockingbird", "Harper Lee", 1);
         Book book3 = new Book(UUID.randomUUID().toString(), "1984", "George Orwell", 1);
 
@@ -34,7 +32,7 @@ public class BookTest {
 
     @Test
     public void testGetters() {
-        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
+        setUp();
         // Test getters
         assertEquals("The Great Gatsby", book.getTitle());
         assertEquals("F. Scott Fitzgerald", book.getAuthor());
@@ -42,7 +40,7 @@ public class BookTest {
 
     @Test
     public void testSetTitle() {
-        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
+        setUp();
         // Set a new title
         book.setTitle("To Kill a Mockingbird");
 
@@ -52,12 +50,22 @@ public class BookTest {
 
     @Test
     public void testSetAuthor() {
-        book = new Book(UUID.randomUUID().toString(), "The Great Gatsby", "F. Scott Fitzgerald", 1);
+        setUp();
         // Set a new author
         book.setAuthor("Harper Lee");
 
         // Check if the author has been updated
         assertEquals("Harper Lee", book.getAuthor());
+    }
+
+    @Test
+    public void testSetCount() {
+        setUp();
+        // Set a new author
+        book.setCount(10);
+
+        // Check if the author has been updated
+        assertEquals(10, book.getCount());
     }
 
 }

@@ -1,32 +1,39 @@
 package cs.nyuad.csuh3260.library;
 
-import java.util.List;
 import java.io.PrintStream;
-import java.util.Scanner;
+import java.util.*;
 
 public class SystemManager {
-
-    private Scanner scanner;
-    private User curUser;
     private DatabaseManager databaseManager;
+    private Map<String, List<String>> bookings;
+    private User curUser;
+    private Map<String, Integer> availabilityList;
+    private Scanner scanner;
     private PrintStream systemOut;
 
-    public SystemManager() {
+    public SystemManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+        this.bookings = new HashMap<>();
+        this.availabilityList = new HashMap<>();
+        initializeAvailabilityList();
         scanner = new Scanner(System.in);
-        databaseManager = new DatabaseManager();
         systemOut = System.out;
     }
 
-    public SystemManager(Scanner scanner) {
+    public SystemManager(DatabaseManager databaseManager, Scanner scanner) {
+        this.databaseManager = databaseManager;
+        this.bookings = new HashMap<>();
+        this.availabilityList = new HashMap<>();
+        initializeAvailabilityList();
         this.scanner = scanner;
         systemOut = System.out;
     }
 
-    public SystemManager(DatabaseManager databaseManager) {
+    public SystemManager(DatabaseManager databaseManager, Scanner scanner, PrintStream systemOut) {
         this.databaseManager = databaseManager;
-    }
-
-    public SystemManager(Scanner scanner, PrintStream systemOut) {
+        this.bookings = new HashMap<>();
+        this.availabilityList = new HashMap<>();
+        initializeAvailabilityList();
         this.scanner = scanner;
         this.systemOut = systemOut;
     }
@@ -38,8 +45,140 @@ public class SystemManager {
         this.curUser = mockedUser;
     }
 
+    public SystemManager() {
+        scanner = new Scanner(System.in);
+        systemOut = System.out;
+    }
+
+    public SystemManager(Scanner scanner) {
+        this.scanner = scanner;
+        systemOut = System.out;
+    }
+
+    public SystemManager(Scanner scanner, PrintStream systemOut) {
+        this.scanner = scanner;
+        this.systemOut = systemOut;
+    }
+
+
+    private void initializeAvailabilityList() {
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            availabilityList.put(book.getID(), book.getCount());
+        }
+    }
+
+
+    public List<Book> search(List<String> keywords) {
+        List<Book> matchingBooks = new ArrayList<>();
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            for (String keyword : keywords) {
+                if (book.getTitle().contains(keyword) || book.getAuthor().contains(keyword)) {
+                    matchingBooks.add(book);
+                    break;
+                }
+            }
+        }
+        return matchingBooks;
+    }
+
+    public boolean reserve(String bookID) {
+        if (availabilityList.containsKey(bookID) && availabilityList.get(bookID) > 0) {
+            availabilityList.put(bookID, availabilityList.get(bookID) - 1);
+            bookings.computeIfAbsent(curUser.getId(), k -> new ArrayList<>()).add(bookID);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean returnBook(String bookID) {
+        if (bookings.containsKey(curUser.getId()) && bookings.get(curUser.getId()).contains(bookID)) {
+            bookings.get(curUser.getId()).remove(bookID);
+            int updatedCount = availabilityList.get(bookID) + 1;
+            availabilityList.put(bookID, updatedCount);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean addNewBook(String title, String author) {
+        List<Book> allBooks = databaseManager.getBooks();
+        for (Book book : allBooks) {
+            if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
+                return false;
+            }
+        }
+        String bookId = generateBookId();
+        Book book = new Book(bookId, title, author, 0);
+        databaseManager.addNewBook(book);
+        availabilityList.put(bookId, 0);
+        return true;
+    }
+
+    public boolean addMoreBooks(String bookID, int count) {
+        if (!availabilityList.containsKey(bookID)) {
+            return false;
+        }
+        try {
+            databaseManager.addMoreBooks(bookID, count);
+            availabilityList.put(bookID, availabilityList.get(bookID) + count);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean removeAllBook(String bookID) {
+        if (!availabilityList.containsKey(bookID)) {
+            return false;
+        }
+        databaseManager.removeAllBook(bookID);
+        availabilityList.remove(bookID);
+        return true;
+    }
+
+    public boolean removeKBooks(String bookID, int count) {
+        if (!availabilityList.containsKey(bookID) || availabilityList.get(bookID) < count) {
+            return false;
+        }
+        try {
+            databaseManager.removeKBooks(bookID, count);
+            int availableCount = availabilityList.get(bookID);
+            availabilityList.put(bookID, availableCount - count);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String generateBookId() {
+        List<Book> allBooks = databaseManager.getBooks();
+        int maxId = 0;
+        for (Book book : allBooks) {
+            int currentId = Integer.parseInt(book.getID());
+            if (currentId > maxId) {
+                maxId = currentId;
+            }
+        }
+        return String.valueOf(maxId + 1);
+    }
+
+    public Map<String, Integer> getAvailabilityList() {
+        return availabilityList;
+    }
+
+    public Map<String, List<String>> getBookings() {
+        return bookings;
+    }
+
+    public void setCurUser(User curUser) {
+        this.curUser = curUser;
+    }
+
     public boolean login(String username, String password) {
-        // check if user exists
         List<User> users = databaseManager.getUsers();
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
@@ -47,21 +186,16 @@ public class SystemManager {
                 return true;
             }
         }
-        // no such user in system
-        System.out.println("User doesn't exist!");
         return false;
     }
-
+    
     public boolean signup(String name, String username, String password) {
-        // check if user exists
         List<User> users = databaseManager.getUsers();
         for (User user : users) {
             if (user.getUsername().equals(username)) {
-                System.out.println("User with same username already exists");
-                return false;
+                return false; // User with the same username already exists
             }
         }
-        // create the user
         User newUser = new User(name, username, password);
         databaseManager.addUser(newUser);
         curUser = newUser;
@@ -69,7 +203,6 @@ public class SystemManager {
     }
 
     public void run() {
-        // Display greeting and instructions
         systemOut.println("Hello! This is a Library program.");
         systemOut.println("In order to use Library services, please signup or login.");
         systemOut.println("Available methods:");
@@ -77,28 +210,20 @@ public class SystemManager {
         systemOut.println("Signup: signup <name>,<username>,<password>");
         systemOut.println("exit: exit");
 
-        // Keep prompting for input until the user chooses to exit or authenticates
         while (true) {
             systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
-            // Process user input
-            // Split the input by space to separate command and arguments
-            String[] parts = userInput.split(" ", 2); // Limit split to 2 parts
+            String[] parts = userInput.split(" ", 2);
             String command = parts[0];
 
-            // Validate the command and call the corresponding method
             if (command.equals("login") || command.equals("signup")) {
-                // Split the data part by comma to separate username, password, and optionally
-                // name for signup
                 String[] data = parts[1].split(",");
-                // Check if the correct number of arguments is provided
                 if ((command.equals("login") && data.length != 2) ||
                         (command.equals("signup") && data.length != 3)) {
                     systemOut.println("Invalid number of arguments. Please try again.");
                     continue;
                 }
-                // Call the corresponding method
                 if (command.equals("login")) {
                     String username = data[0];
                     String password = data[1];
@@ -122,7 +247,6 @@ public class SystemManager {
             }
         }
 
-        // Now user is authenticated
         systemOut.println("Successfully authenticated! You are in. Here are available services: ");
         boolean isAdmin = curUser.isAdmin();
         if (isAdmin) {
@@ -130,26 +254,6 @@ public class SystemManager {
         } else {
             userProgram();
         }
-    }
-
-    public void addBook(String title, String author) {
-
-    }
-
-    public void addMoreBooks(String bookID, String count) {
-
-    }
-
-    public void search(String keyword) {
-
-    }
-
-    public void removeAllBook(String bookID) {
-
-    }
-
-    public void removeKBooks(String bookID, String count) {
-
     }
 
     public void adminProgram() {
@@ -161,11 +265,7 @@ public class SystemManager {
         systemOut.println("removeKBooks: removeKBooks <bookID>,<count>");
         systemOut.println("exit: exit");
 
-        // keep trying to read user input, match with available methods and call for
-        // that method
-
         while (true) {
-            // Prompt for user input
             systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
@@ -175,8 +275,7 @@ public class SystemManager {
                 return;
             }
 
-            // Split the input by space to separate command and arguments
-            String[] parts = userInput.split(" ", 2); // Limit split to 2 parts
+            String[] parts = userInput.split(" ", 2);
             if (parts.length != 2) {
                 systemOut.println("Invalid command. Please try again.");
                 continue;
@@ -184,9 +283,7 @@ public class SystemManager {
             String command = parts[0];
             String dataPart = parts[1];
 
-            // Validate the command and call the corresponding method
             if (command.equals("addBook")) {
-                // Call addBook method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
                     systemOut.println("Invalid command. Please try again.");
@@ -194,40 +291,38 @@ public class SystemManager {
                 }
                 String title = data[0];
                 String author = data[1];
-                addBook(title, author);
+                addNewBook(title, author);
             } else if (command.equals("addMoreBooks")) {
-                // Call addMoreBooks method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
                     systemOut.println("Invalid command. Please try again.");
                     continue;
                 }
                 String bookID = data[0];
-                String count = data[1];
+                int count = Integer.parseInt(data[1]);
                 addMoreBooks(bookID, count);
             } else if (command.equals("search")) {
-                // Call search method
-                String keyword = dataPart;
-                search(keyword);
+                String[] keywords = dataPart.split(",");
+                List<Book> searchResults = search(Arrays.asList(keywords));
+                systemOut.println("Search results:");
+                for (Book book : searchResults) {
+                    systemOut.println(book.getTitle() + " by " + book.getAuthor());
+                }
             } else if (command.equals("removeAllBook")) {
-                // Call removeAllBook method
                 String bookID = dataPart;
                 removeAllBook(bookID);
             } else if (command.equals("removeKBooks")) {
-                // Call removeKBooks method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
                     systemOut.println("Invalid command. Please try again.");
                     continue;
                 }
                 String bookID = data[0];
-                String count = data[1];
+                int count = Integer.parseInt(data[1]);
                 removeKBooks(bookID, count);
             } else {
                 systemOut.println("Unrecognized command.");
-                continue;
             }
-
         }
     }
 
@@ -238,11 +333,7 @@ public class SystemManager {
         systemOut.println("returnBook: returnBook <bookID>");
         systemOut.println("exit: exit");
 
-        // keep trying to read user input, match with available methods and call for
-        // that method
-
         while (true) {
-            // Prompt for user input
             systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
@@ -252,8 +343,7 @@ public class SystemManager {
                 return;
             }
 
-            // Split the input by space to separate command and arguments
-            String[] parts = userInput.split(" ", 2); // Limit split to 2 parts
+            String[] parts = userInput.split(" ", 2);
             if (parts.length != 2) {
                 systemOut.println("Invalid command. Please try again.");
                 continue;
@@ -261,35 +351,38 @@ public class SystemManager {
             String command = parts[0];
             String dataPart = parts[1];
 
-            // Validate the command and call the corresponding method
             if (command.equals("search")) {
-                // Call search method
-                String keyword = dataPart;
-                search(keyword);
+                String[] keywords = dataPart.split(",");
+                List<Book> searchResults = search(Arrays.asList(keywords));
+                systemOut.println("Search results:");
+                for (Book book : searchResults) {
+                    systemOut.println(book.getTitle() + " by " + book.getAuthor());
+                }
             } else if (command.equals("reserve")) {
-                // Call reserve method
                 String bookID = dataPart;
-                reserve(bookID);
+                boolean reserveSuccess = reserve(bookID);
+                if (reserveSuccess) {
+                    systemOut.println("Book reserved successfully.");
+                } else {
+                    systemOut.println("Failed to reserve the book.");
+                }
             } else if (command.equals("returnBook")) {
-                // Call returnBook method
                 String bookID = dataPart;
-                returnBook(bookID);
+                boolean returnSuccess = returnBook(bookID);
+                if (returnSuccess) {
+                    systemOut.println("Book returned successfully.");
+                } else {
+                    systemOut.println("Failed to return the book.");
+                }
             } else {
                 systemOut.println("Unrecognized command.");
-                continue;
             }
         }
     }
 
-    public void reserve(String bookID) {
-    }
-
-    public void returnBook(String bookID) {
-    }
-
     public static void main(String[] args) {
-        SystemManager system = new SystemManager();
+        DatabaseManager databaseManager = new DatabaseManager();
+        SystemManager system = new SystemManager(databaseManager);
         system.run();
     }
-
 }

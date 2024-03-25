@@ -66,4 +66,23 @@ public class UserTest {
         assertEquals("jane123", user.getPassword());
     }
 
+    @Test
+    public void testIsAdmin() {
+        // Create a regular user
+        User regularUser = new User("John Doe", "johndoe", "password123");
+
+        // Create an admin user
+        User adminUser = new User("Admin", "admin", "admin");
+
+        User regularUser2 = new User("Jane Smith", "admin", "notAdmin");
+        User regularUser3 = new User("Tom Keen", "notAdmin", "admin");
+
+        // Test regular users
+        assertFalse(regularUser.isAdmin());
+        assertFalse(regularUser2.isAdmin());
+        assertFalse(regularUser3.isAdmin());
+
+        // Test admin user
+        assertTrue(adminUser.isAdmin());
+    }
 }

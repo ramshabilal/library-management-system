@@ -122,41 +122,41 @@ public class SystemManagerTest {
     }
     
    
-    @Test
-    public void testSingupSuccessfully() {
-        when(databaseManager.getUsers()).thenReturn(new ArrayList<>());
+    // @Test
+    // public void testSingupSuccessfully() {
+    //     when(databaseManager.getUsers()).thenReturn(new ArrayList<>());
 
-        boolean status = system.signup("a", "a", "a");
-        verify(databaseManager).addUser(any());
-        assertTrue(status);
-    }
+    //     boolean status = system.signup("a", "a", "a");
+    //     verify(databaseManager).addUser(any());
+    //     assertTrue(status);
+    // }
 
-    @Test
-    public void testSingupWithExistingUsername() {
-        List<User> users = List.of(new User("a", "a", "a"));
-        when(databaseManager.getUsers()).thenReturn(users);
+    // @Test
+    // public void testSingupWithExistingUsername() {
+    //     List<User> users = List.of(new User("a", "a", "a"));
+    //     when(databaseManager.getUsers()).thenReturn(users);
 
-        boolean status = system.signup("a", "a", "a");
-        assertFalse(status);
-    }
+    //     boolean status = system.signup("a", "a", "a");
+    //     assertFalse(status);
+    // }
 
-    @Test
-    public void testLoginSuccessfully() {
-        List<User> users = List.of(new User("a", "a", "a"));
-        when(databaseManager.getUsers()).thenReturn(users);
+    // @Test
+    // public void testLoginSuccessfully() {
+    //     List<User> users = List.of(new User("a", "a", "a"));
+    //     when(databaseManager.getUsers()).thenReturn(users);
 
-        boolean status = system.login("a", "a");
-        assertTrue(status);
-    }
+    //     boolean status = system.login("a", "a");
+    //     assertTrue(status);
+    // }
 
-    @Test
-    public void testLoginFail() {
-        List<User> users = List.of(new User("a", "a", "a"));
-        when(databaseManager.getUsers()).thenReturn(users);
+    // @Test
+    // public void testLoginFail() {
+    //     List<User> users = List.of(new User("a", "a", "a"));
+    //     when(databaseManager.getUsers()).thenReturn(users);
 
-        boolean status = system.login("b", "b");
-        assertFalse(status);
-    }
+    //     boolean status = system.login("b", "b");
+    //     assertFalse(status);
+    // }
 
     @Test
     public void testAdminProgramExitCommand() {

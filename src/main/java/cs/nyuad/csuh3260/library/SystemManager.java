@@ -1,6 +1,7 @@
 package cs.nyuad.csuh3260.library;
 
 import java.util.List;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class SystemManager {
@@ -8,14 +9,33 @@ public class SystemManager {
     private Scanner scanner;
     private User curUser;
     private DatabaseManager databaseManager;
+    private PrintStream systemOut;
 
     public SystemManager() {
         scanner = new Scanner(System.in);
         databaseManager = new DatabaseManager();
+        systemOut = System.out;
+    }
+
+    public SystemManager(Scanner scanner) {
+        this.scanner = scanner;
+        systemOut = System.out;
     }
 
     public SystemManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
+    }
+
+    public SystemManager(Scanner scanner, PrintStream systemOut) {
+        this.scanner = scanner;
+        this.systemOut = systemOut;
+    }
+
+    public SystemManager(Scanner scanner, PrintStream systemOut, DatabaseManager databaseManager, User mockedUser) {
+        this.scanner = scanner;
+        this.systemOut = systemOut;
+        this.databaseManager = databaseManager;
+        this.curUser = mockedUser;
     }
 
     public boolean login(String username, String password) {
@@ -50,16 +70,16 @@ public class SystemManager {
 
     public void run() {
         // Display greeting and instructions
-        System.out.println("Hello! This is a Library program.");
-        System.out.println("In order to use Library services, please signup or login.");
-        System.out.println("Available methods:");
-        System.out.println("Login: login <username>,<password>");
-        System.out.println("Signup: signup <name>,<username>,<password>");
-        System.out.println("exit: exit");
+        systemOut.println("Hello! This is a Library program.");
+        systemOut.println("In order to use Library services, please signup or login.");
+        systemOut.println("Available methods:");
+        systemOut.println("Login: login <username>,<password>");
+        systemOut.println("Signup: signup <name>,<username>,<password>");
+        systemOut.println("exit: exit");
 
         // Keep prompting for input until the user chooses to exit or authenticates
         while (true) {
-            System.out.print("Enter your command: ");
+            systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
             // Process user input
@@ -75,7 +95,7 @@ public class SystemManager {
                 // Check if the correct number of arguments is provided
                 if ((command.equals("login") && data.length != 2) ||
                         (command.equals("signup") && data.length != 3)) {
-                    System.out.println("Invalid number of arguments. Please try again.");
+                    systemOut.println("Invalid number of arguments. Please try again.");
                     continue;
                 }
                 // Call the corresponding method
@@ -94,16 +114,16 @@ public class SystemManager {
                     }
                 }
             } else if (command.equals("exit")) {
-                System.out.println("Bye!");
+                systemOut.println("Bye!");
                 scanner.close();
                 return;
             } else {
-                System.out.println("Invalid command. Please try again.");
+                systemOut.println("Invalid command. Please try again.");
             }
         }
 
         // Now user is authenticated
-        System.out.println("Successfully authenticated! You are in. Here are available services: ");
+        systemOut.println("Successfully authenticated! You are in. Here are available services: ");
         boolean isAdmin = curUser.isAdmin();
         if (isAdmin) {
             adminProgram();
@@ -133,24 +153,24 @@ public class SystemManager {
     }
 
     public void adminProgram() {
-        System.out.println("--- Admin side ---");
-        System.out.println("addBook: addBook <title>,<author>");
-        System.out.println("addMoreBooks: addMoreBooks <bookID>,<count>");
-        System.out.println("search: search <keyword1>,<keyword2>,...,<keywordN>");
-        System.out.println("removeAllBook: removeAllBook <bookID>");
-        System.out.println("removeKBooks: removeKBooks <bookID>,<count>");
-        System.out.println("exit: exit");
+        systemOut.println("--- Admin side ---");
+        systemOut.println("addBook: addBook <title>,<author>");
+        systemOut.println("addMoreBooks: addMoreBooks <bookID>,<count>");
+        systemOut.println("search: search <keyword1>,<keyword2>,...,<keywordN>");
+        systemOut.println("removeAllBook: removeAllBook <bookID>");
+        systemOut.println("removeKBooks: removeKBooks <bookID>,<count>");
+        systemOut.println("exit: exit");
 
         // keep trying to read user input, match with available methods and call for
         // that method
 
         while (true) {
             // Prompt for user input
-            System.out.print("Enter your command: ");
+            systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
             if (userInput.equals("exit")) {
-                System.out.println("Bye!");
+                systemOut.println("Bye!");
                 scanner.close();
                 return;
             }
@@ -158,7 +178,7 @@ public class SystemManager {
             // Split the input by space to separate command and arguments
             String[] parts = userInput.split(" ", 2); // Limit split to 2 parts
             if (parts.length != 2) {
-                System.out.println("Invalid command. Please try again.");
+                systemOut.println("Invalid command. Please try again.");
                 continue;
             }
             String command = parts[0];
@@ -169,7 +189,7 @@ public class SystemManager {
                 // Call addBook method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
-                    System.out.println("Invalid command. Please try again.");
+                    systemOut.println("Invalid command. Please try again.");
                     continue;
                 }
                 String title = data[0];
@@ -179,7 +199,7 @@ public class SystemManager {
                 // Call addMoreBooks method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
-                    System.out.println("Invalid command. Please try again.");
+                    systemOut.println("Invalid command. Please try again.");
                     continue;
                 }
                 String bookID = data[0];
@@ -197,14 +217,14 @@ public class SystemManager {
                 // Call removeKBooks method
                 String[] data = dataPart.split(",");
                 if (data.length != 2) {
-                    System.out.println("Invalid command. Please try again.");
+                    systemOut.println("Invalid command. Please try again.");
                     continue;
                 }
                 String bookID = data[0];
                 String count = data[1];
                 removeKBooks(bookID, count);
             } else {
-                System.out.println("Unrecognized command.");
+                systemOut.println("Unrecognized command.");
                 continue;
             }
 
@@ -212,22 +232,22 @@ public class SystemManager {
     }
 
     public void userProgram() {
-        System.out.println("--- User side ---");
-        System.out.println("search: search <keyword1>,<keyword2>,...,<keywordN>");
-        System.out.println("reserve: reserve <bookID>");
-        System.out.println("returnBook: returnBook <bookID>");
-        System.out.println("exit: exit");
+        systemOut.println("--- User side ---");
+        systemOut.println("search: search <keyword1>,<keyword2>,...,<keywordN>");
+        systemOut.println("reserve: reserve <bookID>");
+        systemOut.println("returnBook: returnBook <bookID>");
+        systemOut.println("exit: exit");
 
         // keep trying to read user input, match with available methods and call for
         // that method
 
         while (true) {
             // Prompt for user input
-            System.out.print("Enter your command: ");
+            systemOut.print("Enter your command: ");
             String userInput = scanner.nextLine().trim();
 
             if (userInput.equals("exit")) {
-                System.out.println("Bye!");
+                systemOut.println("Bye!");
                 scanner.close();
                 return;
             }
@@ -235,7 +255,7 @@ public class SystemManager {
             // Split the input by space to separate command and arguments
             String[] parts = userInput.split(" ", 2); // Limit split to 2 parts
             if (parts.length != 2) {
-                System.out.println("Invalid command. Please try again.");
+                systemOut.println("Invalid command. Please try again.");
                 continue;
             }
             String command = parts[0];
@@ -255,16 +275,16 @@ public class SystemManager {
                 String bookID = dataPart;
                 returnBook(bookID);
             } else {
-                System.out.println("Unrecognized command.");
+                systemOut.println("Unrecognized command.");
                 continue;
             }
         }
     }
 
-    private void reserve(String bookID) {
+    public void reserve(String bookID) {
     }
 
-    private void returnBook(String bookID) {
+    public void returnBook(String bookID) {
     }
 
     public static void main(String[] args) {

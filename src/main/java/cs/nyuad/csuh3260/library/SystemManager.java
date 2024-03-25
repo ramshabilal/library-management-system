@@ -140,8 +140,9 @@ public class SystemManager {
     }
 
     public boolean removeKBooks(String bookID, int count) {
+        // Check if the book exists and has sufficient quantity
         if (!availabilityList.containsKey(bookID) || availabilityList.get(bookID) < count) {
-            return false;
+            return false; // Book does not exist or insufficient quantity
         }
         try {
             databaseManager.removeKBooks(bookID, count);

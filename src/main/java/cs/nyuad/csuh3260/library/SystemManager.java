@@ -1,5 +1,6 @@
 package cs.nyuad.csuh3260.library;
 
+import java.util.List;
 import java.io.PrintStream;
 import java.util.Scanner;
 
@@ -7,10 +8,12 @@ public class SystemManager {
 
     private Scanner scanner;
     private User curUser;
+    private DatabaseManager databaseManager;
     private PrintStream systemOut;
 
     public SystemManager() {
         scanner = new Scanner(System.in);
+        databaseManager = new DatabaseManager();
         systemOut = System.out;
     }
 
@@ -19,18 +22,49 @@ public class SystemManager {
         systemOut = System.out;
     }
 
+    public SystemManager(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
+
     public SystemManager(Scanner scanner, PrintStream systemOut) {
         this.scanner = scanner;
         this.systemOut = systemOut;
     }
 
+    public SystemManager(Scanner scanner, PrintStream systemOut, DatabaseManager databaseManager, User mockedUser) {
+        this.scanner = scanner;
+        this.systemOut = systemOut;
+        this.databaseManager = databaseManager;
+        this.curUser = mockedUser;
+    }
+
     public boolean login(String username, String password) {
-        curUser = new User(username, username, password);
-        return true;
+        // check if user exists
+        List<User> users = databaseManager.getUsers();
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                curUser = user;
+                return true;
+            }
+        }
+        // no such user in system
+        System.out.println("User doesn't exist!");
+        return false;
     }
 
     public boolean signup(String name, String username, String password) {
-        curUser = new User(name, username, password);
+        // check if user exists
+        List<User> users = databaseManager.getUsers();
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                System.out.println("User with same username already exists");
+                return false;
+            }
+        }
+        // create the user
+        User newUser = new User(name, username, password);
+        databaseManager.addUser(newUser);
+        curUser = newUser;
         return true;
     }
 

@@ -1,16 +1,70 @@
 package cs.nyuad.csuh3260.library;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.io.PrintStream;
 import java.util.Scanner;
 
 import org.junit.jupiter.api.Test;
 
 public class SystemManagerTest {
+
+    private SystemManager systemManager;
+    private DatabaseManager dbManager;
+
+    private void setup() {
+        dbManager = mock(DatabaseManager.class);
+        systemManager = new SystemManager(dbManager);
+    }
+
+    @Test
+    public void testSingupSuccessfully() {
+        setup();
+        when(dbManager.getUsers()).thenReturn(new ArrayList<>());
+
+        boolean status = systemManager.signup("a", "a", "a");
+        verify(dbManager).addUser(any());
+        assertTrue(status);
+    }
+
+    @Test
+    public void testSingupWithExistingUsername() {
+        setup();
+        List<User> users = List.of(new User("a", "a", "a"));
+        when(dbManager.getUsers()).thenReturn(users);
+
+        boolean status = systemManager.signup("a", "a", "a");
+        assertFalse(status);
+    }
+
+    @Test
+    public void testLoginSuccessfully() {
+        setup();
+        List<User> users = List.of(new User("a", "a", "a"));
+        when(dbManager.getUsers()).thenReturn(users);
+
+        boolean status = systemManager.login("a", "a");
+        assertTrue(status);
+    }
+
+    @Test
+    public void testLoginFail() {
+        setup();
+        List<User> users = List.of(new User("a", "a", "a"));
+        when(dbManager.getUsers()).thenReturn(users);
+
+        boolean status = systemManager.login("b", "b");
+        assertFalse(status);
+    }
 
     @Test
     public void testAdminProgramExitCommand() {
@@ -209,7 +263,10 @@ public class SystemManagerTest {
     public void testLoginWhenRun() {
         Scanner scanner = mock(Scanner.class);
         PrintStream systemOut = mock(PrintStream.class);
-        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+        User mockedUser = new User("1", "1", "1");
+        DatabaseManager databaseManager = mock(DatabaseManager.class);
+        when(databaseManager.getUsers()).thenReturn(List.of(mockedUser));
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut, databaseManager, mockedUser));
 
         when(scanner.nextLine()).thenReturn("login 1,1")
                 .thenReturn("exit");
@@ -235,7 +292,10 @@ public class SystemManagerTest {
     public void testSignupWhenRun() {
         Scanner scanner = mock(Scanner.class);
         PrintStream systemOut = mock(PrintStream.class);
-        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+        User mockedUser = new User("1", "1", "1");
+        DatabaseManager databaseManager = mock(DatabaseManager.class);
+        when(databaseManager.getUsers()).thenReturn(List.of(mockedUser));
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut, databaseManager, mockedUser));
 
         when(scanner.nextLine()).thenReturn("signup 1,1,1")
                 .thenReturn("exit");
@@ -265,9 +325,12 @@ public class SystemManagerTest {
         when(scanner.nextLine()).thenReturn("login admin,admin").thenReturn("exit");
 
         PrintStream systemOut = mock(PrintStream.class);
-        SystemManager systemManager = spy(new SystemManager(scanner, systemOut));
+        DatabaseManager databaseManager = mock(DatabaseManager.class);
+        User admin = new User("admin", "admin", "admin");
+        when(databaseManager.getUsers()).thenReturn(List.of(admin));
+        SystemManager systemManager = spy(new SystemManager(scanner, systemOut, databaseManager, admin));
 
-        when(systemManager.login("admin", "admin")).thenReturn(true);
+        when(systemManager.login(anyString(), anyString())).thenReturn(true);
 
         systemManager.run();
         verify(systemManager).adminProgram();

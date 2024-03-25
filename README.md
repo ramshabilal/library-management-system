@@ -53,6 +53,6 @@ mvn exec:java -Dexec.mainClass="cs.nyuad.csuh3260.library.SystemManager"
 ```
 
 ## Achieved statement and branch coverage 
-
+![Coverage](images/coverage.png)
 ## Achieved mutation score
 

@@ -77,3 +77,23 @@ The mutation replaced the boolean return with true for the isAdmin method.
 The initial test suite did not cover the scenario where the isAdmin method should return false for non-admin users.
 #### Improvement to Test Suite: 
 A new test case was added to cover this scenario by creating a user with a non-admin username and password and asserting that the isAdmin method returns false for this user. This test case effectively killed the mutant by detecting the incorrect behavior introduced by the mutation. 
+
+Example 2: Mutant in login() Method in SystemManager class
+<img width="968" alt="Screenshot 2024-03-26 at 00 05 39" src="https://github.com/cs-uh-3260/g3--group_8/assets/46382232/62f80203-51f1-41ae-8c86-d62fd2dc7505">
+
+#### Initial Live Mutant: 
+The mutant removed print statement.
+#### Initial Test Suite: 
+The initial test suite did not verify that `System.out` should print according message.
+#### Improvement to Test Suite: 
+Additional verify() method was added to check for the print to be executed.
+
+Example 3: Mutant in signup() Method in SystemManager class
+<img width="787" alt="Screenshot 2024-03-26 at 00 05 31" src="https://github.com/cs-uh-3260/g3--group_8/assets/46382232/18024eb0-9624-4df6-a121-e87deb9d795f">
+
+#### Initial Live Mutant: 
+The mutant removed print statement.
+#### Initial Test Suite: 
+The initial test suite did not verify that `System.out` should print according message.
+#### Improvement to Test Suite: 
+Additional verify() method was added to check for the print to be executed.

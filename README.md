@@ -54,5 +54,26 @@ mvn exec:java -Dexec.mainClass="cs.nyuad.csuh3260.library.SystemManager"
 
 ## Achieved statement and branch coverage 
 ![Coverage](images/coverage.png)
+
 ## Achieved mutation score
 
+To run PITest using Maven to calculate mutation score:
+```
+mvn org.pitest:pitest-maven:mutationCoverage
+```
+After running PITest, the mutation testing report files are generated in the `target` directory. Look for a directory named `pit-reports` within the `target` directory. View `index.html` inside this directory in browser to see the report.
+
+### Initial Mutation Score
+![Mutation-Score](images/mutation-score.png)
+
+## Initially Live Mutants
+
+Example 1: Mutant in isAdmin() Method in User Class
+![Mutant-1](images/mutant1.png)
+
+#### Initial Live Mutant: 
+The mutation replaced the boolean return with true for the isAdmin method.
+#### Initial Test Suite: 
+The initial test suite did not cover the scenario where the isAdmin method should return false for non-admin users.
+#### Improvement to Test Suite: 
+A new test case was added to cover this scenario by creating a user with a non-admin username and password and asserting that the isAdmin method returns false for this user. This test case effectively killed the mutant by detecting the incorrect behavior introduced by the mutation. 

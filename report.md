@@ -36,6 +36,10 @@ The following sections contain the results obtained from using three static anal
 ### Overall:
 - 18 Errors in the following categories (EI_EXPOSE_REP2, DM_DEFAULT_ENCODING, EI_EXPOSE_REP) with 2 High priority and 16 Medium priorities.
 
+![SpotBugs Image](/images/spotbugs1.png)
+
+![SpotBugs Image 2](/images/spotbugs2.png)
+
 ## PMD Output:
 ### SystemManager.java
 - Error: Unnecessary import (Priority 4)
@@ -43,6 +47,8 @@ The following sections contain the results obtained from using three static anal
 
 ### Overall:
 - 1 Warning in the following category (UnnecessaryImport) with priority level 4 (1 is highest, 5 is lowest).
+
+![PMD Image](/images/pmd.png)
 
 ## Google ErrorProne Output:
 ### SystemManager.java
@@ -55,6 +61,8 @@ The following sections contain the results obtained from using three static anal
 
 ### Overall:
 - 6 Warnings in the following categories (DefaultCharset, StringSplitter).
+
+![ErrorProne Image](/images/error-prone.png)
 
 # Part 2
 

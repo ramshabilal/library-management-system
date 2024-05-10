@@ -50,23 +50,24 @@ public class SystemManagerTest {
     }
 
     @Test
-    void testReserve_ValidUserAndBook_ReservesBook() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+void testReserve_ValidUserAndBook_ReservesBook() {
+    // Arrange
+    DatabaseManager databaseManager = mock(DatabaseManager.class);
+    User user = new User("John", "john123", "password");
+    Book book = new Book("1", "Book Title", "Author", 3);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
 
-        User user = new User("1", "John", "john", "password");
-        when(databaseManager.getUsers()).thenReturn(Collections.singletonList(user));
-        system.setCurUser(user);
+    SystemManager systemManager = new SystemManager(databaseManager);
+    systemManager.setCurUser(user);
 
-        system.getAvailabilityList().put("1", 1);
+    // Act
+    boolean result = systemManager.reserve("1");
 
-        boolean result = system.reserve("1");
-
-        assertTrue(result);
-        assertEquals(1, system.getBookings().get("1").size());
-        assertEquals("1", system.getBookings().get("1").get(0));
-
-    }
+    // Assert
+    assertTrue(result);
+    assertEquals(2, systemManager.getAvailabilityList().get("1"));
+    assertEquals(Collections.singletonList("1"), systemManager.getBookings().get(user.getId()));
+}
 
     @Test
     void testReturnBook_ValidUserAndBook_ReturnsBook() {
@@ -94,17 +95,22 @@ public class SystemManagerTest {
     }
 
     @Test
-    void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
+    // Arrange
+    Book book = new Book("1", "Book 1", "Author 1", 1);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+    system = new SystemManager(databaseManager);
 
-        system.getAvailabilityList().put("1", 1);
-        system.addMoreBooks("1", 5);
+    // Act
+    boolean result = system.addMoreBooks("1", 5);
 
-        Map<String, Integer> availabilityList = system.getAvailabilityList();
-        assertNotNull(availabilityList);
-        assertEquals(6, availabilityList.getOrDefault("1", 0));
-    }
+    // Assert
+    assertTrue(result);
+    Map<String, Integer> availabilityList = system.getAvailabilityList();
+    assertNotNull(availabilityList);
+    assertEquals(6, availabilityList.getOrDefault("1", 0));
+}
+
 
     @Test
     void testRemoveAllBook_ValidBook_RemovesBookFromDatabase() {
@@ -119,17 +125,21 @@ public class SystemManagerTest {
     }
 
     @Test
-    void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
+    // Arrange
+    Book book = new Book("1", "Book 1", "Author 1", 5);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+    system = new SystemManager(databaseManager);
 
-        system.getAvailabilityList().put("1", 5); // Set the initial book count to 5
-        system.removeKBooks("1", 3);
+    // Act
+    boolean result = system.removeKBooks("1", 3);
 
-        Map<String, Integer> availabilityList = system.getAvailabilityList();
-        assertNotNull(availabilityList);
-        assertEquals(2, availabilityList.getOrDefault("1", 0));
-    }
+    // Assert
+    assertTrue(result);
+    Map<String, Integer> availabilityList = system.getAvailabilityList();
+    assertNotNull(availabilityList);
+    assertEquals(2, availabilityList.getOrDefault("1", 0));
+}
 
     // @Test
     // public void testSingupSuccessfully() {

@@ -1,4 +1,5 @@
 # Static Analysis Tools
+The following sections contain the results obtained from using three static analysis tools: SpotBugs, PMD, and Google Error Prone. It also includes an evaluation of those results and fixes for relevant errors.
 
 # Part 1
 

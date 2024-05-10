@@ -22,7 +22,7 @@ public class SystemManager {
 
     public SystemManager(DatabaseManager databaseManager, Scanner scanner) {
         this.databaseManager = databaseManager;
-        this.bookings = new HashMap<>();
+        this.bookings = new HashMap<>();    
         this.availabilityList = new HashMap<>();
         initializeAvailabilityList();
         this.scanner = scanner;
@@ -168,11 +168,15 @@ public class SystemManager {
     }
 
     public Map<String, Integer> getAvailabilityList() {
-        return availabilityList;
+        return new HashMap<>(availabilityList);
     }
 
     public Map<String, List<String>> getBookings() {
-        return bookings;
+        Map<String, List<String>> bookingsCopy = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : bookings.entrySet()) {
+            bookingsCopy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return bookingsCopy;
     }
 
     public void setCurUser(User curUser) {
@@ -256,6 +260,7 @@ public class SystemManager {
             userProgram();
         }
     }
+
 
     public void adminProgram() {
         systemOut.println("--- Admin side ---");

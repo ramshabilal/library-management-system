@@ -97,3 +97,7 @@ The mutant removed print statement.
 The initial test suite did not verify that `System.out` should print according message.
 #### Improvement to Test Suite: 
 Additional verify() method was added to check for the print to be executed.
+
+## Static Analysis Tools Results
+[Link to My Report](report.md)
+

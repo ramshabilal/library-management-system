@@ -3,7 +3,6 @@ package cs.nyuad.csuh3260.library;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;

@@ -1,6 +1,5 @@
 package cs.nyuad.csuh3260.library;
 
-import cs.nyuad.csuh3260.library.Book;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-
 public class SystemManagerTest {
 
     private SystemManager system;
@@ -40,9 +37,9 @@ public class SystemManagerTest {
         Book book2 = new Book("2", "Book 2", "Author 2", 1);
         List<Book> allBooks = Arrays.asList(book1, book2);
         when(databaseManager.getBooks()).thenReturn(allBooks);
-    
+
         List<Book> result = system.search(Arrays.asList("Book"));
-    
+
         if (result == null) {
             result = new ArrayList<Book>(0);
         }
@@ -53,122 +50,131 @@ public class SystemManagerTest {
     }
 
     @Test
-    void testReserve_ValidUserAndBook_ReservesBook() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
-        
-        User user = new User("1", "John", "john", "password");
-        when(databaseManager.getUsers()).thenReturn(Collections.singletonList(user));
-        system.setCurUser(user);
-        
-        system.getAvailabilityList().put("1", 1);
-        
-        boolean result = system.reserve("1");
+void testReserve_ValidUserAndBook_ReservesBook() {
+    // Arrange
+    DatabaseManager databaseManager = mock(DatabaseManager.class);
+    User user = new User("John", "john123", "password");
+    Book book = new Book("1", "Book Title", "Author", 3);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
 
-        assertTrue(result);
-        assertEquals(1, system.getBookings().get("1").size());
-        assertEquals("1", system.getBookings().get("1").get(0));
-        
-    }
+    SystemManager systemManager = new SystemManager(databaseManager);
+    systemManager.setCurUser(user);
+
+    // Act
+    boolean result = systemManager.reserve("1");
+
+    // Assert
+    assertTrue(result);
+    assertEquals(2, systemManager.getAvailabilityList().get("1"));
+    assertEquals(Collections.singletonList("1"), systemManager.getBookings().get(user.getId()));
+}
 
     @Test
     void testReturnBook_ValidUserAndBook_ReturnsBook() {
         Book book = new Book("2", "Book 1", "Author 1", 1);
         when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
-        
+
         User user = new User("1", "John", "john", "password");
         when(databaseManager.getUsers()).thenReturn(Collections.singletonList(user));
         system.setCurUser(user);
-        
+
         system.getAvailabilityList().put("2", 1);
         system.reserve("2");
-        
+
         system.returnBook("2");
-        
+
         assertFalse(system.getBookings().containsKey("2"));
-        
+
     }
-    
+
     @Test
     void testAddNewBook_ValidBook_AddsBookToDatabase() {
         system.addNewBook("Book 1", "Author 1");
-        
+
         verify(databaseManager, times(1)).addNewBook(any(Book.class));
     }
-    
+
     @Test
-    void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
-        
-        system.getAvailabilityList().put("1", 1);
-        system.addMoreBooks("1", 5);
-        
-        Map<String, Integer> availabilityList = system.getAvailabilityList();
-        assertNotNull(availabilityList);
-        assertEquals(6, availabilityList.getOrDefault("1", 0));
-    }
+void testAddMoreBooks_ValidBookAndCount_IncreasesBookCount() {
+    // Arrange
+    Book book = new Book("1", "Book 1", "Author 1", 1);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+    system = new SystemManager(databaseManager);
+
+    // Act
+    boolean result = system.addMoreBooks("1", 5);
+
+    // Assert
+    assertTrue(result);
+    Map<String, Integer> availabilityList = system.getAvailabilityList();
+    assertNotNull(availabilityList);
+    assertEquals(6, availabilityList.getOrDefault("1", 0));
+}
+
 
     @Test
     void testRemoveAllBook_ValidBook_RemovesBookFromDatabase() {
         Book book = new Book("1", "Book 1", "Author 1", 1);
         when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
-        
+
         system.removeAllBook("1");
-        
+
         Map<String, Integer> availabilityList = system.getAvailabilityList();
         assertNotNull(availabilityList);
         assertFalse(system.getAvailabilityList().containsKey("1"));
     }
 
     @Test
-    void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
-        Book book = new Book("1", "Book 1", "Author 1", 1);
-        when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
-        
-        system.getAvailabilityList().put("1", 5); // Set the initial book count to 5
-        system.removeKBooks("1", 3);
-        
-        Map<String, Integer> availabilityList = system.getAvailabilityList();
-        assertNotNull(availabilityList);
-        assertEquals(2, availabilityList.getOrDefault("1", 0));
-    }
-    
-   
+void testRemoveKBooks_ValidBookAndCount_DecreasesBookCount() {
+    // Arrange
+    Book book = new Book("1", "Book 1", "Author 1", 5);
+    when(databaseManager.getBooks()).thenReturn(Collections.singletonList(book));
+    system = new SystemManager(databaseManager);
+
+    // Act
+    boolean result = system.removeKBooks("1", 3);
+
+    // Assert
+    assertTrue(result);
+    Map<String, Integer> availabilityList = system.getAvailabilityList();
+    assertNotNull(availabilityList);
+    assertEquals(2, availabilityList.getOrDefault("1", 0));
+}
+
     // @Test
     // public void testSingupSuccessfully() {
-    //     when(databaseManager.getUsers()).thenReturn(new ArrayList<>());
+    // when(databaseManager.getUsers()).thenReturn(new ArrayList<>());
 
-    //     boolean status = system.signup("a", "a", "a");
-    //     verify(databaseManager).addUser(any());
-    //     assertTrue(status);
+    // boolean status = system.signup("a", "a", "a");
+    // verify(databaseManager).addUser(any());
+    // assertTrue(status);
     // }
 
     // @Test
     // public void testSingupWithExistingUsername() {
-    //     List<User> users = List.of(new User("a", "a", "a"));
-    //     when(databaseManager.getUsers()).thenReturn(users);
+    // List<User> users = List.of(new User("a", "a", "a"));
+    // when(databaseManager.getUsers()).thenReturn(users);
 
-    //     boolean status = system.signup("a", "a", "a");
-    //     assertFalse(status);
+    // boolean status = system.signup("a", "a", "a");
+    // assertFalse(status);
     // }
 
     // @Test
     // public void testLoginSuccessfully() {
-    //     List<User> users = List.of(new User("a", "a", "a"));
-    //     when(databaseManager.getUsers()).thenReturn(users);
+    // List<User> users = List.of(new User("a", "a", "a"));
+    // when(databaseManager.getUsers()).thenReturn(users);
 
-    //     boolean status = system.login("a", "a");
-    //     assertTrue(status);
+    // boolean status = system.login("a", "a");
+    // assertTrue(status);
     // }
 
     // @Test
     // public void testLoginFail() {
-    //     List<User> users = List.of(new User("a", "a", "a"));
-    //     when(databaseManager.getUsers()).thenReturn(users);
+    // List<User> users = List.of(new User("a", "a", "a"));
+    // when(databaseManager.getUsers()).thenReturn(users);
 
-    //     boolean status = system.login("b", "b");
-    //     assertFalse(status);
+    // boolean status = system.login("b", "b");
+    // assertFalse(status);
     // }
 
     @Test
@@ -186,8 +192,6 @@ public class SystemManagerTest {
         // Verify behavior
         verify(scanner).close();
     }
-
-    
 
     @Test
     public void testAddMoreBooksWhenAdminProgram() {
@@ -222,25 +226,22 @@ public class SystemManagerTest {
         Scanner scanner = mock(Scanner.class);
         PrintStream systemOut = mock(PrintStream.class);
         SystemManager systemManager = spy(new SystemManager(databaseManager, scanner, systemOut));
-        
+
         Book book1 = new Book("1", "Book 1", "Author 1", 1);
         Book book2 = new Book("2", "Book 2", "Author 2", 1);
         List<Book> allBooks = Arrays.asList(book1, book2);
         when(databaseManager.getBooks()).thenReturn(allBooks);
-        
+
         when(scanner.nextLine()).thenReturn("search 1,2")
                 .thenReturn("exit");
-        
+
         systemManager.adminProgram();
-        
+
         verify(systemManager).search(Arrays.asList("1", "2"));
         verify(systemOut).println("Search results:");
         verify(systemOut).println("Book 1 by Author 1");
         verify(systemOut).println("Book 2 by Author 2");
     }
-
-    
-    
 
     @Test
     public void testUnrecognizedCommandWhenAdminProgram() {
@@ -275,23 +276,22 @@ public class SystemManagerTest {
         Scanner scanner = mock(Scanner.class);
         PrintStream systemOut = mock(PrintStream.class);
         SystemManager systemManager = spy(new SystemManager(databaseManager, scanner, systemOut));
-        
+
         Book book1 = new Book("1", "Book 1", "Author 1", 1);
         Book book2 = new Book("2", "Book 2", "Author 2", 1);
         List<Book> allBooks = Arrays.asList(book1, book2);
         when(databaseManager.getBooks()).thenReturn(allBooks);
-        
+
         when(scanner.nextLine()).thenReturn("search 1,2")
                 .thenReturn("exit");
-        
+
         systemManager.userProgram();
-        
+
         verify(systemManager).search(Arrays.asList("1", "2"));
         verify(systemOut).println("Search results:");
         verify(systemOut).println("Book 1 by Author 1");
         verify(systemOut).println("Book 2 by Author 2");
     }
-    
 
     @Test
     public void testReturnBookWhenUserProgram() {
@@ -404,4 +404,3 @@ public class SystemManagerTest {
     }
 
 }
-

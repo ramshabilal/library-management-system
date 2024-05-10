@@ -25,7 +25,7 @@ public class SystemManager {
 
     public SystemManager(DatabaseManager databaseManager, Scanner scanner) {
         this.databaseManager = databaseManager;
-        this.bookings = new HashMap<>();
+        this.bookings = new HashMap<>();    
         this.availabilityList = new HashMap<>();
         initializeAvailabilityList();
         this.scanner = scanner;
@@ -143,7 +143,7 @@ public class SystemManager {
     }
 
     public boolean removeKBooks(String bookID, int count) {
-        // Check if the book exists and has sufficient quantity
+        // Check that book exists and has sufficient quantity
         if (!availabilityList.containsKey(bookID) || availabilityList.get(bookID) < count) {
             return false; // Book does not exist or insufficient quantity
         }
@@ -171,11 +171,15 @@ public class SystemManager {
     }
 
     public Map<String, Integer> getAvailabilityList() {
-        return availabilityList;
+        return new HashMap<>(availabilityList);
     }
 
     public Map<String, List<String>> getBookings() {
-        return bookings;
+        Map<String, List<String>> bookingsCopy = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : bookings.entrySet()) {
+            bookingsCopy.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+        }
+        return bookingsCopy;
     }
 
     public void setCurUser(User curUser) {

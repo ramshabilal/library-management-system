@@ -3,6 +3,9 @@ package cs.nyuad.csuh3260.library;
 import java.io.PrintStream;
 import java.util.*;
 
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 public class SystemManager {
     private DatabaseManager databaseManager;
     private Map<String, List<String>> bookings;
@@ -16,7 +19,7 @@ public class SystemManager {
         this.bookings = new HashMap<>();
         this.availabilityList = new HashMap<>();
         initializeAvailabilityList();
-        scanner = new Scanner(System.in);
+        scanner = new Scanner(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         systemOut = System.out;
     }
 
@@ -219,7 +222,7 @@ public class SystemManager {
             String command = parts[0];
 
             if (command.equals("login") || command.equals("signup")) {
-                String[] data = parts[1].split(",");
+                String[] data = parts[1].split(",", -1);
                 if ((command.equals("login") && data.length != 2) ||
                         (command.equals("signup") && data.length != 3)) {
                     systemOut.println("Invalid number of arguments. Please try again.");
